@@ -1,0 +1,229 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  CLIENT
+  PRACTITIONER
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+// ============================================
+// USER MODEL
+// ============================================
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  password      String?   // nullable si auth via OAuth
+  role          Role      @default(CLIENT)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  practitioner  Practitioner?
+  appointments  Appointment[] // Rendez-vous pris par ce user (en tant que client)
+  accounts      Account[]
+  sessions      Session[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// ============================================
+// PRACTITIONER MODEL
+// ============================================
+model Practitioner {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  
+  // Informations professionnelles
+  specialty   String   // ex: "Kinésithérapeute", "Psychologue"
+  description String?  @db.Text
+  phone       String?
+  address     String?
+  city        String?
+  postalCode  String?
+  
+  // Paramètres de rendez-vous
+  appointmentDuration Int @default(30) // en minutes
+  cancellationDelay   Int @default(24) // heures minimum avant annulation
+  
+  // Statut
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availabilities  Availability[]
+  unavailabilities Unavailability[]
+  appointments    Appointment[]
+
+  @@index([userId])
+  @@index([specialty])
+  @@index([city])
+  @@map("practitioners")
+}
+
+// ============================================
+// AVAILABILITY MODEL (Horaires récurrents)
+// ============================================
+model Availability {
+  id            String     @id @default(cuid())
+  practitionerId String
+  
+  dayOfWeek     DayOfWeek
+  startTime     String     // Format: "09:00"
+  endTime       String     // Format: "17:00"
+  
+  // Permet de définir plusieurs plages horaires par jour
+  // ex: 9h-12h et 14h-18h = 2 availabilities pour le même jour
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  practitioner  Practitioner @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+
+  @@index([practitionerId, dayOfWeek])
+  @@map("availabilities")
+}
+
+// ============================================
+// UNAVAILABILITY MODEL (Congés, absences)
+// ============================================
+model Unavailability {
+  id            String   @id @default(cuid())
+  practitionerId String
+  
+  startDate     DateTime // Date de début de l'indisponibilité
+  endDate       DateTime // Date de fin de l'indisponibilité
+  reason        String?  // ex: "Congés", "Formation", "Maladie"
+  isAllDay      Boolean  @default(true)
+  
+  // Si isAllDay = false, on peut définir des heures précises
+  startTime     String?  // Format: "14:00"
+  endTime       String?  // Format: "16:00"
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  practitioner  Practitioner @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+
+  @@index([practitionerId])
+  @@index([startDate, endDate])
+  @@map("unavailabilities")
+}
+
+// ============================================
+// APPOINTMENT MODEL
+// ============================================
+model Appointment {
+  id              String            @id @default(cuid())
+  
+  // Relations
+  clientId        String
+  practitionerId  String
+  
+  // Détails du rendez-vous
+  startDateTime   DateTime
+  endDateTime     DateTime
+  status          AppointmentStatus @default(PENDING)
+  
+  // Notes
+  clientNotes     String?           @db.Text // Notes du client lors de la réservation
+  practitionerNotes String?         @db.Text // Notes privées du praticien
+  
+  // Annulation
+  cancelledAt     DateTime?
+  cancelledBy     String?           // userId de celui qui a annulé
+  cancellationReason String?        @db.Text
+  
+  // Emails envoyés
+  confirmationEmailSent Boolean     @default(false)
+  reminderEmailSent     Boolean     @default(false)
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  client          User              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  practitioner    Practitioner      @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([practitionerId])
+  @@index([startDateTime])
+  @@index([status])
+  @@map("appointments")
+}
+
+// ============================================
+// AUTH.JS MODELS (nécessaires pour NextAuth/Auth.js)
+// ============================================
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
