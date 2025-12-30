@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import bcrypt from "bcryptjs";
 
 async function testDatabaseConnection() {
   try {
@@ -15,7 +16,7 @@ async function testDatabaseConnection() {
         email: "client@test.com",
         name: "Jean Dupont",
         role: "CLIENT",
-        password: "hashed_password_here", // En production, utilisez bcrypt
+        password: await bcrypt.hash("Test1234", 10),
       },
     });
     console.log("✅ Client created:", client);
@@ -27,7 +28,7 @@ async function testDatabaseConnection() {
         email: "praticien@test.com",
         name: "Dr. Marie Martin",
         role: "PRACTITIONER",
-        password: "hashed_password_here",
+        password: await bcrypt.hash("Test1234", 10),
         practitioner: {
           create: {
             specialty: "Kinésithérapeute",
