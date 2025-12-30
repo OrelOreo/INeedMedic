@@ -53,7 +53,7 @@ export function Header({
   return (
     <header className="w-full">
       <div className="container mx-auto h-16 flex items-center">
-        <Link href="/" className="text-lg font-semibold">
+        <Link href="/" className="text-lg font-semibold ml-2 md:ml-0">
           INeedMedic
         </Link>
 
