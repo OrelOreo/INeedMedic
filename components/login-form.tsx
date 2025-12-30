@@ -12,6 +12,9 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface LoginFormData {
   email: string;
@@ -19,14 +22,53 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
+  const router = useRouter();
+  const { data: session } = useSession();
+  console.log("🚀 ~ LoginForm ~ session:", session);
+  const [formData, setFormData] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("🚀 ~ handleSubmit ~ e:", e);
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Email ou mot de passe incorrect");
+      } else if (result?.ok) {
+        console.log("ok");
+        router.push("/profile");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Une erreur est survenue lors de la connexion");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-4/5 md:w-full max-w-sm mt-12">
       <CardHeader>
         <CardTitle>Connectez-vous</CardTitle>
         <CardDescription>Entrez les informations demandées.</CardDescription>
       </CardHeader>
-      <CardContent>
-        <form>
+      <form onSubmit={handleSubmit}>
+        <CardContent>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="email">
@@ -36,6 +78,10 @@ export default function LoginForm() {
                 id="email"
                 type="email"
                 placeholder="email@example.com"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
               />
             </div>
@@ -45,19 +91,27 @@ export default function LoginForm() {
                   Mot de passe<span className="text-red-500">*</span>
                 </Label>
               </div>
-              <Input id="password" type="password" required />
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+              />
             </div>
           </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex-col gap-2">
-        <Button type="submit" className="w-full cursor-pointer">
-          Se connecter
-        </Button>
-        <Button asChild variant="link">
-          <Link href="/register">S'inscrire</Link>
-        </Button>
-      </CardFooter>
+        </CardContent>
+        <CardFooter className="flex-col mt-6 gap-2">
+          <Button type="submit" className="w-full cursor-pointer">
+            Se connecter
+          </Button>
+          <Button asChild variant="link">
+            <Link href="/register">S'inscrire</Link>
+          </Button>
+        </CardFooter>
+      </form>
     </Card>
   );
 }

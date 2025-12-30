@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/shared/header";
+import { AuthProvider } from "@/components/auth-provider";
+import { getSession } from "@/lib/auth-helpers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,25 +25,33 @@ export const metadata: Metadata = {
     "INeedDoctor est une plateforme de prise de rendez-vous médicaux en ligne, permettant aux patients de trouver rapidement un professionnel de santé et de gérer leurs consultations simplement et efficacement.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+  console.log("🚀 ~ RootLayout ~ session:", session);
+
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Header />
-          {children}
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header
+              isAuthenticated={!!session}
+              userRole={session?.user?.role}
+            />
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

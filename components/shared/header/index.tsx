@@ -8,10 +8,7 @@ import { Separator } from "@/components/ui/separator";
 
 interface HeaderProps {
   isAuthenticated?: boolean;
-  userRole?: "CLIENT" | "PRACTITIONER";
-  userName?: string;
-  userEmail?: string;
-  userImage?: string;
+  userRole: "CLIENT" | "PRACTITIONER" | undefined;
 }
 
 const unauthenticatedNavItems: NavItem[] = [
@@ -30,13 +27,8 @@ const practitionerNavItems: NavItem[] = [
   { label: "Disponibilités", href: "/dashboard/availability" },
 ];
 
-export function Header({
-  isAuthenticated = false,
-  userRole = "CLIENT",
-  userName = "Utilisateur",
-  userEmail = "user@example.com",
-  userImage,
-}: HeaderProps) {
+export function Header({ isAuthenticated = false, userRole }: HeaderProps) {
+  console.log("🚀 ~ Header ~ isAuthenticated:", isAuthenticated);
   const navItems = isAuthenticated
     ? userRole === "PRACTITIONER"
       ? practitionerNavItems
