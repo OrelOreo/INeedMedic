@@ -28,7 +28,6 @@ const practitionerNavItems: NavItem[] = [
 ];
 
 export function Header({ isAuthenticated = false, userRole }: HeaderProps) {
-  // console.log("🚀 ~ Header ~ isAuthenticated:", isAuthenticated);
   const navItems = isAuthenticated
     ? userRole === "PRACTITIONER"
       ? practitionerNavItems
@@ -50,8 +49,8 @@ export function Header({ isAuthenticated = false, userRole }: HeaderProps) {
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
-          <MobileMenu navItems={navItems} />
-          <DesktopMenu navItems={navItems} />
+          <MobileMenu navItems={navItems} isAuthenticated={isAuthenticated} />
+          <DesktopMenu navItems={navItems} isAuthenticated={isAuthenticated} />
         </div>
       </div>
       <Separator />

@@ -13,12 +13,17 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { NavItem } from "@/types/nav";
+import { LogoutButton } from "./logout-button";
 
 type MobileMenuProps = {
   navItems: NavItem[];
+  isAuthenticated: boolean;
 };
 
-export default function MobileMenu({ navItems }: MobileMenuProps) {
+export default function MobileMenu({
+  navItems,
+  isAuthenticated,
+}: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="md:hidden flex items-center">
@@ -52,6 +57,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
                 {item.label}
               </Link>
             ))}
+            {isAuthenticated && <LogoutButton />}
           </nav>
         </SheetContent>
       </Sheet>

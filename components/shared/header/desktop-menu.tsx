@@ -1,10 +1,15 @@
 import { NavItem } from "@/types/nav";
 import Link from "next/link";
+import { LogoutButton } from "./logout-button";
 
 type DesktopMenuProps = {
   navItems: NavItem[];
+  isAuthenticated: boolean;
 };
-export default function DesktopMenu({ navItems }: DesktopMenuProps) {
+export default function DesktopMenu({
+  navItems,
+  isAuthenticated,
+}: DesktopMenuProps) {
   return (
     <nav className="hidden md:flex items-center gap-1">
       {navItems.map((item) => (
@@ -17,6 +22,7 @@ export default function DesktopMenu({ navItems }: DesktopMenuProps) {
           {item.label}
         </Link>
       ))}
+      {isAuthenticated && <LogoutButton />}
     </nav>
   );
 }
