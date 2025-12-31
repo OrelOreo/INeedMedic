@@ -28,7 +28,7 @@ const practitionerNavItems: NavItem[] = [
 ];
 
 export function Header({ isAuthenticated = false, userRole }: HeaderProps) {
-  console.log("🚀 ~ Header ~ isAuthenticated:", isAuthenticated);
+  // console.log("🚀 ~ Header ~ isAuthenticated:", isAuthenticated);
   const navItems = isAuthenticated
     ? userRole === "PRACTITIONER"
       ? practitionerNavItems

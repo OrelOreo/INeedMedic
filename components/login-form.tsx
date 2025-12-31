@@ -24,7 +24,7 @@ interface LoginFormData {
 export default function LoginForm() {
   const router = useRouter();
   const { data: session } = useSession();
-  console.log("🚀 ~ LoginForm ~ session:", session);
+  // console.log("🚀 ~ LoginForm ~ session:", session);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -34,7 +34,6 @@ export default function LoginForm() {
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("🚀 ~ handleSubmit ~ e:", e);
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -49,7 +48,7 @@ export default function LoginForm() {
       if (result?.error) {
         setError("Email ou mot de passe incorrect");
       } else if (result?.ok) {
-        console.log("ok");
+        // console.log("ok");
         router.push("/profile");
         router.refresh();
       }
