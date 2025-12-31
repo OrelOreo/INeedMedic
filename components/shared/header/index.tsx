@@ -18,6 +18,7 @@ const unauthenticatedNavItems: NavItem[] = [
 
 const clientNavItems: NavItem[] = [
   { label: "Accueil", href: "/" },
+  { label: "Profil", href: "/profile" },
   { label: "Mes rendez-vous", href: "/dashboard/appointments" },
 ];
 

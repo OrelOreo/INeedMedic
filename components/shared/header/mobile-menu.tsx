@@ -57,7 +57,7 @@ export default function MobileMenu({
                 {item.label}
               </Link>
             ))}
-            {isAuthenticated && <LogoutButton />}
+            {isAuthenticated && <LogoutButton className="mx-4" />}
           </nav>
         </SheetContent>
       </Sheet>
