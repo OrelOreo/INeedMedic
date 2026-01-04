@@ -1,8 +1,8 @@
-// app/api/appointments/route.ts
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { prisma } from "@/db/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -13,9 +13,9 @@ export async function GET() {
 
   const userId = session.user.id;
   const practitionerId = session.user.practitionerId;
-  const role = session.user.role; // "client" ou "practitioner"
+  const role = session.user.role;
 
-  let whereClause = {};
+  let whereClause: Prisma.AppointmentWhereInput = {};
 
   if (role === "PRACTITIONER") {
     whereClause = { practitionerId: practitionerId };
