@@ -1,14 +1,13 @@
-import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
 
-export async function GET() {
+export async function getAppointmentsByUser() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    throw new Error("Unauthorized");
   }
 
   const userId = session.user.id;
@@ -22,10 +21,7 @@ export async function GET() {
   } else if (role === "CLIENT") {
     whereClause = { clientId: userId };
   } else {
-    return NextResponse.json(
-      { error: "Forbidden: unknown role" },
-      { status: 403 }
-    );
+    throw new Error("Forbidden: unknown role");
   }
 
   const appointments = await prisma.appointment.findMany({
@@ -39,5 +35,5 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json({ appointments });
+  return appointments;
 }
