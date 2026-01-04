@@ -6,8 +6,8 @@ import { AppointmentStatus } from "@prisma/client";
 import { formatDate, formatTime } from "@/lib/utils";
 
 export async function AppointmentsList() {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
   const appointments = await getAppointmentsByUser();
+  console.log("🚀 ~ AppointmentsList ~ appointments:", appointments);
 
   if (appointments.length === 0) {
     return <p className="text-gray-500">Aucun rendez-vous trouvé.</p>;
@@ -21,7 +21,7 @@ export async function AppointmentsList() {
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start">
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-lg truncate">
-                  {appointment.practitionerId}
+                  {appointment.practitioner.user.name}
                 </CardTitle>
                 {appointment.practitioner?.specialty && (
                   <p className="text-sm text-muted-foreground mt-1">

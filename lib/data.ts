@@ -29,8 +29,16 @@ export async function getAppointmentsByUser() {
   const appointments = await prisma.appointment.findMany({
     where: whereClause,
     include: {
-      client: true,
-      practitioner: true,
+      client: {
+        select: { name: true, email: true },
+      },
+      practitioner: {
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
+        },
+      },
     },
     orderBy: {
       startDateTime: "asc",
