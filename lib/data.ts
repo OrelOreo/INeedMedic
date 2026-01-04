@@ -3,7 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/db/prisma";
 import { Prisma } from "@prisma/client";
 
-export async function getAppointmentsByUser() {
+async function getWhereClauseForUser(): Promise<Prisma.AppointmentWhereInput> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -14,15 +14,17 @@ export async function getAppointmentsByUser() {
   const practitionerId = session.user.practitionerId;
   const role = session.user.role;
 
-  let whereClause: Prisma.AppointmentWhereInput = {};
-
   if (role === "PRACTITIONER") {
-    whereClause = { practitionerId: practitionerId };
+    return { practitionerId: practitionerId };
   } else if (role === "CLIENT") {
-    whereClause = { clientId: userId };
+    return { clientId: userId };
   } else {
     throw new Error("Forbidden: unknown role");
   }
+}
+
+export async function getAppointmentsByUser() {
+  const whereClause = await getWhereClauseForUser();
 
   const appointments = await prisma.appointment.findMany({
     where: whereClause,
@@ -36,4 +38,14 @@ export async function getAppointmentsByUser() {
   });
 
   return appointments;
+}
+
+export async function getAppointmentsCountByUser() {
+  const whereClause = await getWhereClauseForUser();
+
+  const count = await prisma.appointment.count({
+    where: whereClause,
+  });
+
+  return count;
 }
