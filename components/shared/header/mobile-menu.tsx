@@ -16,7 +16,7 @@ import type { NavItem } from "@/types/nav";
 import { LogoutButton } from "./logout-button";
 
 type MobileMenuProps = {
-  navItems: NavItem[];
+  navItems: readonly NavItem[];
   isAuthenticated: boolean;
 };
 

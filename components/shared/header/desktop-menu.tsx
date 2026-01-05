@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LogoutButton } from "./logout-button";
 
 type DesktopMenuProps = {
-  navItems: NavItem[];
+  navItems: readonly NavItem[];
   isAuthenticated: boolean;
 };
 export default function DesktopMenu({

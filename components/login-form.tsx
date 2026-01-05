@@ -49,7 +49,7 @@ export default function LoginForm() {
         setError("Email ou mot de passe incorrect");
       } else if (result?.ok) {
         // console.log("ok");
-        router.push("/profile");
+        router.push("/dashboard");
         router.refresh();
       }
     } catch (error) {

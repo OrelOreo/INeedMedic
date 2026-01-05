@@ -1,51 +1,24 @@
 import Link from "next/link";
-import { NavItem } from "@/types/nav";
+import { getServerSession } from "next-auth";
 
 import MobileMenu from "./mobile-menu";
-
 import DesktopMenu from "./desktop-menu";
 import { Separator } from "@/components/ui/separator";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getNavigationItems, getHomeHref } from "@/lib/navigation";
 
-interface HeaderProps {
-  isAuthenticated?: boolean;
-  userRole: "CLIENT" | "PRACTITIONER" | undefined;
-}
+export async function Header() {
+  const session = await getServerSession(authOptions);
+  const isAuthenticated = !!session;
+  const userRole = session?.user?.role;
 
-const unauthenticatedNavItems: NavItem[] = [
-  { label: "Se connecter", href: "/login" },
-  { label: "S'inscrire", href: "/register" },
-];
-
-const clientNavItems: NavItem[] = [
-  { label: "Accueil", href: "/" },
-  { label: "Profil", href: "/profile" },
-  { label: "Mes rendez-vous", href: "/dashboard/appointments" },
-];
-
-const practitionerNavItems: NavItem[] = [
-  { label: "Agenda", href: "/dashboard/calendar" },
-  { label: "Rendez-vous", href: "/dashboard/appointments" },
-  { label: "Disponibilités", href: "/dashboard/availability" },
-];
-
-export function Header({ isAuthenticated = false, userRole }: HeaderProps) {
-  const navItems = isAuthenticated
-    ? userRole === "PRACTITIONER"
-      ? practitionerNavItems
-      : clientNavItems
-    : unauthenticatedNavItems;
-
-  // const userInitials = userName
-  //   .split(" ")
-  //   .map((n) => n[0])
-  //   .join("")
-  //   .toUpperCase()
-  //   .slice(0, 2);
+  const navItems = getNavigationItems(isAuthenticated, userRole);
+  const homeHref = getHomeHref(isAuthenticated);
 
   return (
     <header className="w-full">
       <div className="container mx-auto h-16 flex items-center">
-        <Link href="/" className="text-lg font-semibold ml-2 md:ml-0">
+        <Link href={homeHref} className="text-lg font-semibold ml-2 md:ml-0">
           INeedMedic
         </Link>
 

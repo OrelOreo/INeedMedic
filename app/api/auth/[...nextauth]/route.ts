@@ -33,7 +33,6 @@ export const authOptions: NextAuthOptions = {
           },
         });
         if (!user || !user.password) {
-          console.log("ici ?");
           throw new Error("Email ou mot de passe incorrect");
         }
 

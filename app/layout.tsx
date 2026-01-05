@@ -44,10 +44,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header
-              isAuthenticated={!!session}
-              userRole={session?.user?.role}
-            />
+            <Header />
             {children}
           </ThemeProvider>
         </AuthProvider>
