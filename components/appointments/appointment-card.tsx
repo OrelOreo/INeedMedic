@@ -7,7 +7,6 @@ import { formatDate, formatTime } from "@/lib/utils";
 
 export async function AppointmentsList() {
   const appointments = await getAppointmentsByUser();
-  console.log("🚀 ~ AppointmentsList ~ appointments:", appointments);
 
   if (appointments.length === 0) {
     return <p className="text-gray-500">Aucun rendez-vous trouvé.</p>;
