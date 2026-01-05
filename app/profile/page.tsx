@@ -12,11 +12,12 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Mail, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { getSession } from "@/lib/auth-helpers";
 import { getCurrentUser } from "@/lib/data";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
+import EditProfileForm from "@/components/profile/edit-form";
 
 export default async function ProfilePage() {
   const session = await getSession();
@@ -34,8 +35,9 @@ export default async function ProfilePage() {
       .toUpperCase()
       .slice(0, 2);
   };
+
   return (
-    <div className="container mx-auto py-8 px-4 max-w-6xl">
+    <main className="container mx-auto py-8 px-4 max-w-6xl">
       {/* Header Section */}
       <div className="mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6">
@@ -79,43 +81,7 @@ export default async function ProfilePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 space-y-2 gap-6">
-                <div className="space-y-2">
-                  <div className="flex gap-x-1 items-center">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="lastName">Nom complet</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="lastName"
-                      placeholder="Doe"
-                      defaultValue={user.name}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex gap-x-1 items-center">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="email">Email</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="john.doe@example.com"
-                      defaultValue={user.email}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="flex flex-col md:flex-row justify-end gap-3">
-                <Button variant="outline">Annuler</Button>
-                <Button>Enregistrer les modifications</Button>
-              </div>
+              <EditProfileForm user={user} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -160,6 +126,6 @@ export default async function ProfilePage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </main>
   );
 }
