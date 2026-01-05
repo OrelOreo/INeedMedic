@@ -4,6 +4,14 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/db/prisma";
 import { z } from "zod";
 import { getSession } from "./auth-helpers";
+import {
+  createForbiddenErrorMessage,
+  createUnauthorizedErrorMessage,
+  createEmailExistsErrorMessage,
+  createValidationSuccessMessage,
+  createValidationErrorMessage,
+  createCatchErrorMessage,
+} from "./helpers";
 
 export type State = {
   id: string;
@@ -16,36 +24,44 @@ export type State = {
 };
 
 const userProfileFormSchema = z.object({
-  name: z.string().min(2, "Name is required").max(30, "Name too long").trim(),
+  name: z.string().min(2, "Nom requis").max(30, "Nom trop long").trim(),
   email: z
-    .email("Invalid email address")
-    .max(30, "Email too long")
+    .email("Adresse e-mail invalide")
+    .max(30, "Email trop long")
     .toLowerCase(),
 });
+
+async function isEmailExist(email: string, userId: string) {
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      email: email,
+      NOT: { id: userId },
+    },
+  });
+  return existingUser ? true : false;
+}
 
 export async function updateUserProfile(prevState: State, formData: FormData) {
   const session = await getSession();
 
   if (!session?.user?.id) {
-    return {
-      id: prevState.id,
-      message: "Unauthorized: You must be logged in",
-      errors: {
-        globalErrors: ["Unauthorized: You must be logged in"],
-      },
-    };
+    return createUnauthorizedErrorMessage(prevState.id);
+    // return {
+    //   id: prevState.id,
+    //   message:
+    //     "Non autorisé : Vous devez être connecté pour mettre à jour le profil",
+    //   errors: {
+    //     globalErrors: [
+    //       "Non autorisé : Vous devez être connecté pour mettre à jour le profil",
+    //     ],
+    //   },
+    // };
   }
 
   const userId = prevState.id;
 
   if (session.user.id !== userId) {
-    return {
-      id: prevState.id,
-      message: "Forbidden: You can only update your own profile",
-      errors: {
-        globalErrors: ["Forbidden: You can only update your own profile"],
-      },
-    };
+    return createForbiddenErrorMessage(prevState.id);
   }
 
   const validatedFields = userProfileFormSchema.safeParse({
@@ -54,36 +70,14 @@ export async function updateUserProfile(prevState: State, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    const errorTree = z.treeifyError(validatedFields.error);
-    return {
-      id: prevState.id,
-      message: "Missing fields. Failed to update profile.",
-      errors: {
-        name: errorTree.properties?.name?.errors,
-        email: errorTree.properties?.email?.errors,
-      },
-    };
+    return createValidationErrorMessage(prevState.id, validatedFields.error);
   }
 
   try {
-    // Vérifier si l'email est déjà utilisé par un autre utilisateur
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        email: validatedFields.data.email,
-        NOT: { id: userId },
-      },
-    });
+    const emailExists = await isEmailExist(validatedFields.data.email, userId);
 
-    if (existingUser) {
-      return {
-        id: prevState.id,
-        message: "Une erreur est survenue lors de la mise à jour du profil.",
-        errors: {
-          globalErrors: [
-            "Une erreur est survenue lors de la mise à jour du profil..",
-          ],
-        },
-      };
+    if (!emailExists) {
+      return createEmailExistsErrorMessage(prevState.id);
     }
 
     await prisma.user.update({
@@ -96,18 +90,8 @@ export async function updateUserProfile(prevState: State, formData: FormData) {
 
     revalidatePath("/profile");
 
-    return {
-      id: prevState.id,
-      message: "Profile updated successfully",
-      errors: {},
-    };
+    return createValidationSuccessMessage(prevState.id);
   } catch (error) {
-    return {
-      id: prevState.id,
-      message: "Failed to update user profile",
-      errors: {
-        globalErrors: ["Failed to update user profile"],
-      },
-    };
+    return createCatchErrorMessage(prevState.id);
   }
 }
