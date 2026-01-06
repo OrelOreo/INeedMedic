@@ -5,12 +5,11 @@ import { User, Mail, AlertCircleIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useActionState } from "react";
 import { Alert, AlertTitle } from "../ui/alert";
 import { Prisma } from "@prisma/client";
-import { useFormStatus } from "react-dom";
-import { Spinner } from "../ui/spinner";
+
+import SubmitButtons from "../shared/submit-buttons";
 
 type UserProfileProps = Prisma.UserGetPayload<{
   select: {
@@ -19,22 +18,6 @@ type UserProfileProps = Prisma.UserGetPayload<{
     email: true;
   };
 }>;
-
-function SubmitButtons() {
-  const { pending } = useFormStatus();
-
-  return (
-    <div className="flex flex-col md:flex-row justify-end gap-3">
-      <Button variant="outline" disabled={pending}>
-        Annuler
-      </Button>
-      <Button disabled={pending}>
-        {pending && <Spinner />}
-        Enregistrer les modifications
-      </Button>
-    </div>
-  );
-}
 
 export default function EditProfileForm({ user }: { user: UserProfileProps }) {
   const initialState: FormInfosState = {

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
@@ -8,6 +7,7 @@ import { Alert, AlertTitle } from "../ui/alert";
 import { useActionState } from "react";
 import { updateUserPassword, FormPasswordState } from "@/lib/actions";
 import { Lock, AlertCircle as AlertCircleIcon } from "lucide-react";
+import SubmitButtons from "../shared/submit-buttons";
 
 export default function EditPasswordsForm() {
   const initialState: FormPasswordState = {
@@ -24,7 +24,6 @@ export default function EditPasswordsForm() {
     updateUserProfileWithId,
     initialState
   );
-  console.log("🚀 ~ EditPasswordsForm ~ state:", state);
 
   return (
     <form action={formAction}>
@@ -128,12 +127,7 @@ export default function EditPasswordsForm() {
 
       <Separator className="my-6" />
 
-      <div className="flex flex-col md:flex-row justify-end gap-3">
-        <Button type="button" variant="outline">
-          Annuler
-        </Button>
-        <Button type="submit">Mettre à jour le mot de passe</Button>
-      </div>
+      <SubmitButtons />
     </form>
   );
 }
