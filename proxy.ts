@@ -8,7 +8,16 @@ export async function proxy(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  if (!token) {
+  const { pathname } = request.nextUrl;
+
+  if (token && (pathname === "/" || pathname === "/login")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  if (
+    !token &&
+    (pathname.startsWith("/profile") || pathname.startsWith("/dashboard"))
+  ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -16,5 +25,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:path*", "/dashboard/:path"],
+  matcher: ["/profile/:path*", "/dashboard/:path*", "/login", "/"],
 };
