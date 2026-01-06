@@ -16,7 +16,7 @@ async function testDatabaseConnection() {
         email: "client@test.com",
         name: "Jean Dupont",
         role: "CLIENT",
-        password: await bcrypt.hash("Test1234", 10),
+        password: await bcrypt.hash("Test12345", 10),
       },
     });
     console.log("✅ Client created:", client);
@@ -28,7 +28,7 @@ async function testDatabaseConnection() {
         email: "praticien@test.com",
         name: "Dr. Marie Martin",
         role: "PRACTITIONER",
-        password: await bcrypt.hash("Test1234", 10),
+        password: await bcrypt.hash("Test12345", 10),
         practitioner: {
           create: {
             specialty: "Kinésithérapeute",
