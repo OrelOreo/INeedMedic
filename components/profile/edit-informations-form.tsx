@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useActionState } from "react";
 import { Alert, AlertTitle } from "../ui/alert";
 import { Prisma } from "@prisma/client";
+import { useFormStatus } from "react-dom";
+import { Spinner } from "../ui/spinner";
 
 type UserProfileProps = Prisma.UserGetPayload<{
   select: {
@@ -17,6 +19,22 @@ type UserProfileProps = Prisma.UserGetPayload<{
     email: true;
   };
 }>;
+
+function SubmitButtons() {
+  const { pending } = useFormStatus();
+
+  return (
+    <div className="flex flex-col md:flex-row justify-end gap-3">
+      <Button variant="outline" disabled={pending}>
+        Annuler
+      </Button>
+      <Button disabled={pending}>
+        {pending && <Spinner />}
+        Enregistrer les modifications
+      </Button>
+    </div>
+  );
+}
 
 export default function EditProfileForm({ user }: { user: UserProfileProps }) {
   const initialState: FormInfosState = {
@@ -112,10 +130,7 @@ export default function EditProfileForm({ user }: { user: UserProfileProps }) {
 
       <Separator className="my-6" />
 
-      <div className="flex flex-col md:flex-row justify-end gap-3">
-        <Button variant="outline">Annuler</Button>
-        <Button>Enregistrer les modifications</Button>
-      </div>
+      <SubmitButtons />
     </form>
   );
 }
