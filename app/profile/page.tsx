@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,16 +7,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield } from "lucide-react";
 import { getSession } from "@/lib/auth-helpers";
 import { getCurrentUser } from "@/lib/data";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
-import EditProfileForm from "@/components/profile/edit-form";
+import EditProfileForm from "@/components/profile/edit-informations-form";
+import EditPasswordsForm from "@/components/profile/edit-passwords-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Profil",
+};
 
 export default async function ProfilePage() {
   const session = await getSession();
@@ -99,29 +101,7 @@ export default async function ProfilePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-                <Input id="currentPassword" type="password" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                <Input id="newPassword" type="password" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">
-                  Confirmer le mot de passe
-                </Label>
-                <Input id="confirmPassword" type="password" />
-              </div>
-
-              <Separator />
-
-              <div className="flex flex-col md:flex-row justify-end gap-3">
-                <Button variant="outline">Annuler</Button>
-                <Button>Mettre à jour le mot de passe</Button>
-              </div>
+              <EditPasswordsForm />
             </CardContent>
           </Card>
         </TabsContent>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/db/prisma";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import { getSession } from "./auth-helpers";
 import {
   createForbiddenErrorMessage,
@@ -13,11 +14,21 @@ import {
   createCatchErrorMessage,
 } from "./helpers";
 
-export type State = {
+export type FormInfosState = {
   id: string;
   errors?: {
     name?: string[];
     email?: string[];
+    globalErrors?: string[];
+  };
+  message?: string | null;
+};
+
+export type FormPasswordState = {
+  errors?: {
+    currentPassword?: string[];
+    newPassword?: string[];
+    confirmPassword?: string[];
     globalErrors?: string[];
   };
   message?: string | null;
@@ -31,6 +42,17 @@ const userProfileFormSchema = z.object({
     .toLowerCase(),
 });
 
+const userPasswordFormSchema = z
+  .object({
+    currentPassword: z.string().min(6, "Mot de passe actuel requis"),
+    newPassword: z.string().min(6, "Nouveau mot de passe requis"),
+    confirmPassword: z.string().min(6, "Confirmation du mot de passe requise"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
+
 async function isEmailExist(email: string, userId: string) {
   const existingUser = await prisma.user.findFirst({
     where: {
@@ -41,21 +63,33 @@ async function isEmailExist(email: string, userId: string) {
   return existingUser ? true : false;
 }
 
-export async function updateUserProfile(prevState: State, formData: FormData) {
+async function isPasswordValid(userId: string, password: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+
+    if (!user) {
+      return false;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    return isPasswordValid;
+  } catch (error) {
+    console.log("Error checking password validity:", error);
+    return false;
+  }
+}
+
+export async function updateUserProfile(
+  prevState: FormInfosState,
+  formData: FormData
+) {
   const session = await getSession();
 
   if (!session?.user?.id) {
     return createUnauthorizedErrorMessage(prevState.id);
-    // return {
-    //   id: prevState.id,
-    //   message:
-    //     "Non autorisé : Vous devez être connecté pour mettre à jour le profil",
-    //   errors: {
-    //     globalErrors: [
-    //       "Non autorisé : Vous devez être connecté pour mettre à jour le profil",
-    //     ],
-    //   },
-    // };
   }
 
   const userId = prevState.id;
@@ -93,5 +127,76 @@ export async function updateUserProfile(prevState: State, formData: FormData) {
     return createValidationSuccessMessage(prevState.id);
   } catch (error) {
     return createCatchErrorMessage(prevState.id);
+  }
+}
+
+export async function updateUserPassword(
+  prevState: FormPasswordState,
+  formData: FormData
+): Promise<FormPasswordState> {
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    return {
+      errors: {
+        globalErrors: ["Session non trouvée. Veuillez vous reconnecter."],
+      },
+      message: null,
+    };
+  }
+
+  const validatedFields = userPasswordFormSchema.safeParse({
+    currentPassword: formData.get("currentPassword"),
+    newPassword: formData.get("newPassword"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!validatedFields.success) {
+    const errorTree = z.treeifyError(validatedFields.error);
+    return {
+      errors: {
+        currentPassword: errorTree.properties?.currentPassword?.errors,
+        newPassword: errorTree.properties?.newPassword?.errors,
+        confirmPassword: errorTree.properties?.confirmPassword?.errors,
+      },
+      message: "Échec de la validation. Veuillez vérifier vos données.",
+    };
+  }
+
+  const { currentPassword, newPassword } = validatedFields.data;
+
+  try {
+    const isValid = await isPasswordValid(session.user.id, currentPassword);
+    if (!isValid) {
+      return {
+        errors: {
+          currentPassword: ["Le mot de passe actuel est incorrect"],
+        },
+        message: null,
+      };
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { password: hashedNewPassword },
+    });
+
+    // revalidatePath("/profile");
+
+    return {
+      errors: undefined,
+      message: "Mot de passe mis à jour avec succès",
+    };
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return {
+      errors: {
+        globalErrors: [
+          "Une erreur est survenue lors de la mise à jour du mot de passe",
+        ],
+      },
+      message: null,
+    };
   }
 }

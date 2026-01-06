@@ -1,15 +1,15 @@
 import z from "zod";
-import { State } from "./actions";
+import { FormInfosState } from "./actions";
 
 function createValidationResponse(
   id: string,
   message: string,
-  errors: State["errors"]
-): State {
+  errors: FormInfosState["errors"]
+): FormInfosState {
   return { id, message, errors };
 }
 
-function createUnauthorizedErrorMessage(id: string): State {
+function createUnauthorizedErrorMessage(id: string): FormInfosState {
   return createValidationResponse(
     id,
     "Non autorisé : Vous devez être connecté pour mettre à jour le profil",
@@ -21,7 +21,7 @@ function createUnauthorizedErrorMessage(id: string): State {
   );
 }
 
-function createForbiddenErrorMessage(id: string): State {
+function createForbiddenErrorMessage(id: string): FormInfosState {
   return createValidationResponse(
     id,
     "Interdit : Vous ne pouvez pas mettre à jour le profil d'un autre utilisateur",
@@ -33,7 +33,7 @@ function createForbiddenErrorMessage(id: string): State {
   );
 }
 
-function createEmailExistsErrorMessage(id: string): State {
+function createEmailExistsErrorMessage(id: string): FormInfosState {
   return createValidationResponse(
     id,
     "Une erreur est survenue lors de la mise à jour du profil.",
@@ -43,7 +43,10 @@ function createEmailExistsErrorMessage(id: string): State {
   );
 }
 
-function createValidationErrorMessage(id: string, error: z.ZodError): State {
+function createValidationErrorMessage(
+  id: string,
+  error: z.ZodError
+): FormInfosState {
   const errorTree = z.treeifyError(error) as {
     errors: string[];
     properties?: Record<string, { errors: string[] }>;
@@ -58,11 +61,11 @@ function createValidationErrorMessage(id: string, error: z.ZodError): State {
   );
 }
 
-function createValidationSuccessMessage(id: string): State {
+function createValidationSuccessMessage(id: string): FormInfosState {
   return createValidationResponse(id, "Profil mis à jour avec succès.", {});
 }
 
-function createCatchErrorMessage(id: string): State {
+function createCatchErrorMessage(id: string): FormInfosState {
   return createValidationResponse(id, "Échec de la mise à jour du profil", {
     globalErrors: ["Échec de la mise à jour du profil"],
   });
