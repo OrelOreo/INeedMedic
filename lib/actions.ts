@@ -77,7 +77,6 @@ async function isPasswordValid(userId: string, password: string) {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     return isPasswordValid;
   } catch (error) {
-    console.log("Error checking password validity:", error);
     return false;
   }
 }
@@ -110,7 +109,7 @@ export async function updateUserProfile(
   try {
     const emailExists = await isEmailExist(validatedFields.data.email, userId);
 
-    if (!emailExists) {
+    if (emailExists) {
       return createEmailExistsErrorMessage(prevState.id);
     }
 
