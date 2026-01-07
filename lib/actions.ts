@@ -20,15 +20,19 @@ import {
   PASSWORD_UPDATE_ERROR_MESSAGE,
   GENERIC_ERROR_MESSAGE,
   REGISTRATION_SUCCESS_MESSAGE,
+  APPOINTMENT_CANCELLATION_ERROR_MESSAGE,
+  APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE,
+  NON_AUTHORIZED_ACTION,
 } from "./helpers/messages-helpers";
 import {
   createForbiddenErrorMessage,
   createUnauthorizedErrorMessage,
   createEmailExistsErrorMessage,
-  createValidationSuccessMessage,
+  createValidationSuccessProfileMessage,
   createValidationErrorMessage,
   createCatchErrorMessage,
 } from "@/lib/helpers/form-state-helpers";
+import { Appointment, AppointmentStatus } from "@prisma/client";
 
 export type FormInfosState = {
   id: string;
@@ -168,7 +172,7 @@ export async function updateUserProfile(
 
     revalidatePath("/profile");
 
-    return createValidationSuccessMessage(prevState.id);
+    return createValidationSuccessProfileMessage(prevState.id);
   } catch (error) {
     return createCatchErrorMessage(prevState.id);
   }
@@ -297,6 +301,45 @@ export async function registerUser(
         globalErrors: [PASSWORD_UPDATE_ERROR_MESSAGE],
       },
       message: null,
+    };
+  }
+}
+
+export async function cancelAppointment(appointment: Appointment) {
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    return { statut: "error", message: NON_AUTHORIZED_ACTION };
+  }
+
+  if (
+    appointment.clientId !== session.user.id &&
+    appointment.practitionerId !== session.user.id
+  ) {
+    return { statut: "error", message: NON_AUTHORIZED_ACTION };
+  }
+
+  const cancelledAtDateTime = new Date();
+  try {
+    await prisma.appointment.update({
+      where: { id: appointment.id },
+      data: {
+        status: AppointmentStatus.CANCELLED,
+        cancelledAt: cancelledAtDateTime,
+        cancelledBy: session.user.id,
+      },
+    });
+
+    revalidatePath("/dashboard/appointments");
+    return {
+      statut: "success",
+      message: APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.log("🚀 ~ cancelAppointment ~ error:", error);
+    return {
+      statut: "error",
+      message: APPOINTMENT_CANCELLATION_ERROR_MESSAGE,
     };
   }
 }

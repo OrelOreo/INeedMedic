@@ -47,7 +47,7 @@ function createValidationErrorMessage(
   });
 }
 
-function createValidationSuccessMessage(id: string): FormInfosState {
+function createValidationSuccessProfileMessage(id: string): FormInfosState {
   return createValidationResponse(id, PROFILE_UPDATE_SUCCESS_MESSAGE, {});
 }
 
@@ -62,6 +62,6 @@ export {
   createForbiddenErrorMessage,
   createValidationErrorMessage,
   createEmailExistsErrorMessage,
-  createValidationSuccessMessage,
+  createValidationSuccessProfileMessage,
   createCatchErrorMessage,
 };

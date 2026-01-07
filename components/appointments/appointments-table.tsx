@@ -11,7 +11,7 @@ import {
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { AppointmentStatus } from "@prisma/client";
 import { formatDate, formatTime } from "@/lib/utils";
-import { Button } from "../ui/button";
+import CancelAppointmentButton from "./cancel-appointment-button";
 
 export async function AppointmentsTable() {
   const appointments = await getAppointmentsByUser();
@@ -116,13 +116,7 @@ export async function AppointmentsTable() {
               </TableCell>
               <TableCell className="text-right">
                 {canCancelAppointment(appointment) && (
-                  <Button
-                    variant="destructive"
-                    className="cursor-pointer"
-                    size="sm"
-                  >
-                    Annuler
-                  </Button>
+                  <CancelAppointmentButton appointment={appointment} />
                 )}
               </TableCell>
             </TableRow>

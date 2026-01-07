@@ -27,3 +27,7 @@ export const NON_AUTHORIZED_ACTION = "Action non autorisée.";
 export const PROFILE_UPDATE_ERROR_MESSAGE =
   "Échec de la mise à jour du profil.";
 export const PROFILE_UPDATE_SUCCESS_MESSAGE = "Profil mis à jour avec succès.";
+export const APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE =
+  "Rendez-vous annulé avec succès.";
+export const APPOINTMENT_CANCELLATION_ERROR_MESSAGE =
+  "Échec de l'annulation du rendez-vous.";
