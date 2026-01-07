@@ -34,6 +34,18 @@ export type FormPasswordState = {
   message?: string | null;
 };
 
+export type RegisterFormState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+    confirmPassword?: string[];
+    role?: string[];
+    globalErrors?: string[];
+  };
+  message?: string | null;
+};
+
 const userProfileFormSchema = z.object({
   name: z.string().min(2, "Nom requis").max(30, "Nom trop long").trim(),
   email: z
@@ -53,11 +65,27 @@ const userPasswordFormSchema = z
     path: ["confirmPassword"],
   });
 
-async function isEmailExist(email: string, userId: string) {
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+    email: z.email("Email invalide"),
+    password: z
+      .string()
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+    confirmPassword: z.string().min(6, "Confirmation du mot de passe requise"),
+    role: z.enum(["CLIENT", "PRACTITIONER"], {
+      message: "Veuillez sélectionner un type de compte",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
+
+async function isEmailExist(email: string) {
   const existingUser = await prisma.user.findFirst({
     where: {
       email: email,
-      NOT: { id: userId },
     },
   });
   return existingUser ? true : false;
@@ -107,7 +135,7 @@ export async function updateUserProfile(
   }
 
   try {
-    const emailExists = await isEmailExist(validatedFields.data.email, userId);
+    const emailExists = await isEmailExist(validatedFields.data.email);
 
     if (emailExists) {
       return createEmailExistsErrorMessage(prevState.id);
@@ -181,14 +209,75 @@ export async function updateUserPassword(
       data: { password: hashedNewPassword },
     });
 
-    // revalidatePath("/profile");
-
     return {
       errors: undefined,
       message: "Mot de passe mis à jour avec succès",
     };
   } catch (error) {
     console.error("Error updating password:", error);
+    return {
+      errors: {
+        globalErrors: [
+          "Une erreur est survenue lors de la mise à jour du mot de passe",
+        ],
+      },
+      message: null,
+    };
+  }
+}
+
+export async function registerUser(
+  prevState: RegisterFormState,
+  formData: FormData
+) {
+  const validatedFields = registerSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+    role: formData.get("role"),
+  });
+  console.log("🚀 ~ registerUser ~ validatedFields:", validatedFields.data);
+
+  if (!validatedFields.success) {
+    const errorTree = z.treeifyError(validatedFields.error);
+    return {
+      errors: {
+        name: errorTree.properties?.name?.errors,
+        email: errorTree.properties?.email?.errors,
+        password: errorTree.properties?.password?.errors,
+        confirmPassword: errorTree.properties?.confirmPassword?.errors,
+        role: errorTree.properties?.role?.errors,
+      },
+      message: "Échec de la validation. Veuillez vérifier vos données.",
+    };
+  }
+  const { name, email, password, role } = validatedFields.data;
+  try {
+    const existingUser = await isEmailExist(email);
+    if (existingUser) {
+      return {
+        errors: {
+          globalErrors: ["Une erreur est survenue."],
+        },
+        message: null,
+      };
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+      },
+    });
+    return {
+      errors: undefined,
+      message: "Inscription réussie. Vous pouvez maintenant vous connecter.",
+    };
+  } catch (error) {
+    console.error("Error ", error);
     return {
       errors: {
         globalErrors: [
