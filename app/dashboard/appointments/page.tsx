@@ -6,7 +6,7 @@ import { AppointmentsTableSkeleton } from "@/components/ui/appointments-table-sk
 export default async function AppointmentsPage() {
   const countOfAppointments = await getAppointmentsCountByUser();
   return (
-    <div className="container mx-auto p-6">
+    <main className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Mes Rendez-vous</h1>
 
       <Suspense
@@ -20,6 +20,6 @@ export default async function AppointmentsPage() {
       >
         <AppointmentsTable />
       </Suspense>
-    </div>
+    </main>
   );
 }

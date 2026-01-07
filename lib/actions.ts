@@ -23,6 +23,10 @@ import {
   APPOINTMENT_CANCELLATION_ERROR_MESSAGE,
   APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE,
   NON_AUTHORIZED_ACTION,
+  START_TIME_REQUIRED_MESSAGE,
+  END_TIME_REQUIRED_MESSAGE,
+  END_TIME_AFTER_START_TIME_MESSAGE,
+  TIME_SLOT_CONFLICT_MESSAGE,
 } from "./helpers/messages-helpers";
 import {
   createForbiddenErrorMessage,
@@ -32,7 +36,7 @@ import {
   createValidationErrorMessage,
   createCatchErrorMessage,
 } from "@/lib/helpers/form-state-helpers";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus, DayOfWeek } from "@prisma/client";
 import type { AppointmentWithRelations } from "@/types/appointment-with-relations";
 
 export type FormInfosState = {
@@ -89,7 +93,7 @@ const userPasswordFormSchema = z
     path: ["confirmPassword"],
   });
 
-const registerSchema = z
+const registerFormSchema = z
   .object({
     name: z.string().min(2, NAME_MIN_LENGTH_MESSAGE),
     email: z.email(EMAIL_INVALID_MESSAGE).toLowerCase(),
@@ -102,6 +106,24 @@ const registerSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
     path: ["confirmPassword"],
+  });
+
+const availabilityFormSchema = z
+  .object({
+    startTime: z.string().min(1, START_TIME_REQUIRED_MESSAGE),
+    endTime: z.string().min(1, END_TIME_REQUIRED_MESSAGE),
+    dayOfWeek: z.enum([
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY",
+    ]),
+  })
+  .refine((data) => data.startTime < data.endTime, {
+    message: END_TIME_AFTER_START_TIME_MESSAGE,
   });
 
 async function isEmailExist(email: string) {
@@ -250,7 +272,7 @@ export async function registerUser(
   prevState: RegisterFormState,
   formData: FormData
 ) {
-  const validatedFields = registerSchema.safeParse({
+  const validatedFields = registerFormSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
@@ -341,6 +363,103 @@ export async function cancelAppointment(appointment: AppointmentWithRelations) {
     return {
       statut: "error",
       message: APPOINTMENT_CANCELLATION_ERROR_MESSAGE,
+    };
+  }
+}
+
+export async function isAvailabilityOverlap(
+  practitionerId: string,
+  dayOfWeek: DayOfWeek,
+  startTime: string,
+  endTime: string
+) {
+  const existingAvailability = await prisma.availability.findFirst({
+    where: {
+      practitionerId: practitionerId,
+      dayOfWeek,
+      OR: [
+        // Case 1: New slot starts during an existing slot
+        {
+          AND: [
+            { startTime: { lte: startTime } },
+            { endTime: { gt: startTime } },
+          ],
+        },
+        // Case 2: New slot ends during an existing slot
+        {
+          AND: [{ startTime: { lt: endTime } }, { endTime: { gte: endTime } }],
+        },
+        // Case 3: New slot completely encompasses an existing slot
+        {
+          AND: [
+            { startTime: { gte: startTime } },
+            { endTime: { lte: endTime } },
+          ],
+        },
+      ],
+    },
+  });
+  return existingAvailability ? true : false;
+}
+
+export async function createAvailability(prevState: any, formData: FormData) {
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    return { statut: "error", message: NON_AUTHORIZED_ACTION };
+  }
+
+  const validatedFields = availabilityFormSchema.safeParse({
+    startTime: formData.get("startTime"),
+    endTime: formData.get("endTime"),
+    dayOfWeek: formData.get("dayOfWeek"),
+  });
+
+  if (!validatedFields.success) {
+    const errorTree = z.treeifyError(validatedFields.error);
+
+    return {
+      errors: {
+        startTime: errorTree.properties?.startTime?.errors,
+        endTime: errorTree.properties?.endTime?.errors,
+        dayOfWeek: errorTree.properties?.dayOfWeek?.errors,
+      },
+      message: null,
+    };
+  }
+  const { startTime, endTime, dayOfWeek } = validatedFields.data;
+  try {
+    const existingAvailability = await isAvailabilityOverlap(
+      session.user.practitionerId!,
+      dayOfWeek,
+      startTime,
+      endTime
+    );
+    if (existingAvailability) {
+      return {
+        errors: {
+          startTime: [TIME_SLOT_CONFLICT_MESSAGE],
+          endTime: [TIME_SLOT_CONFLICT_MESSAGE],
+          dayOfWeek: [TIME_SLOT_CONFLICT_MESSAGE],
+        },
+        message: null,
+      };
+    }
+    await prisma.availability.create({
+      data: {
+        practitionerId: session.user.practitionerId!,
+        startTime,
+        endTime,
+        dayOfWeek,
+      },
+    });
+  } catch (error) {
+    console.error("Error ", error);
+    return {
+      errors: {
+        globalErrors: [GENERIC_ERROR_MESSAGE],
+      },
+      message: null,
     };
   }
 }

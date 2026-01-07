@@ -31,3 +31,10 @@ export const APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE =
   "Rendez-vous annulé avec succès.";
 export const APPOINTMENT_CANCELLATION_ERROR_MESSAGE =
   "Échec de l'annulation du rendez-vous.";
+
+export const START_TIME_REQUIRED_MESSAGE = "L'heure de début est requise.";
+export const END_TIME_REQUIRED_MESSAGE = "L'heure de fin est requise.";
+export const END_TIME_AFTER_START_TIME_MESSAGE =
+  "L'heure de fin doit être postérieure à l'heure de début.";
+export const TIME_SLOT_CONFLICT_MESSAGE =
+  "Ce créneau horaire entre en conflit avec une disponibilité existante.";
