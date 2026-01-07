@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { AppointmentsList } from "@/components/appointments/appointment-card";
-import { CardSkeleton } from "@/components/ui/card-skeleton";
+import { AppointmentsTable } from "@/components/appointments/appointments-table";
 import { getAppointmentsCountByUser } from "@/lib/data";
+import { AppointmentsTableSkeleton } from "@/components/ui/appointments-table-skeleton";
 
 export default async function AppointmentsPage() {
   const countOfAppointments = await getAppointmentsCountByUser();
@@ -11,14 +11,14 @@ export default async function AppointmentsPage() {
 
       <Suspense
         fallback={
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: countOfAppointments }).map((_, i) => (
-              <CardSkeleton key={i} />
-            ))}
-          </div>
+          <>
+            <AppointmentsTableSkeleton
+              countOfAppointments={countOfAppointments}
+            />
+          </>
         }
       >
-        <AppointmentsList />
+        <AppointmentsTable />
       </Suspense>
     </div>
   );
