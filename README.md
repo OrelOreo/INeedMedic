@@ -38,7 +38,6 @@ Application de prise de rendez-vous en ligne pour des praticiens de santé et bi
 
 De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilisent encore :
 
-- 📝 Des agendas papier
 - 🔧 Des outils peu flexibles
 - 💰 Des solutions coûteuses ou surdimensionnées
 
@@ -47,7 +46,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 | Problème                              | Impact                     |
 | ------------------------------------- | -------------------------- |
 | Gestion manuelle des créneaux         | Perte de temps             |
-| Risques de double réservation         | Conflits d'agenda          |
 | Annulations mal gérées                | Mauvaise expérience client |
 | Manque de visibilité pour les clients | Barrière à l'accessibilité |
 
@@ -58,7 +56,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 ### Objectifs fonctionnels
 
 - 📅 Permettre aux clients de réserver un rendez-vous en ligne
-- 🗓️ Offrir aux praticiens un agenda clair et flexible
 - 📧 Automatiser les confirmations et annulations par email
 
 ### Objectifs techniques
@@ -119,7 +116,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 ### 👨‍⚕️ Praticien
 
 - 🕐 Gérer ses disponibilités
-- 📊 Consulter son agenda
 - 👀 Voir les rendez-vous à venir
 - ❌ Annuler un rendez-vous
 
@@ -145,12 +141,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 - Prévention des doubles réservations
 - Système de réservation / annulation
 - Règles d'annulation (ex : délai de 24h minimum)
-
-### 🗓️ Agenda praticien
-
-- Vue calendrier interactive
-- Liste détaillée des rendez-vous
-- Filtrage par date et statut
 
 ### 📧 Notifications automatiques
 
