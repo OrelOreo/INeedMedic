@@ -1,36 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📅 INeedMedic - Application de prise de rendez-vous avec praticiens
 
-## Getting Started
+## 📋 Table des matières
 
-First, run the development server:
+- [Présentation du projet](#-présentation-du-projet)
+- [Contexte & problématique](#-contexte--problématique)
+- [Objectifs](#-objectifs)
+- [Stack technique](#-stack-technique)
+- [Utilisateurs & rôles](#-utilisateurs--rôles)
+- [Fonctionnalités principales](#-fonctionnalités-principales-mvp)
+- [Logique métier](#-logique-métier)
+- [Sécurité & bonnes pratiques](#-sécurité--bonnes-pratiques)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Présentation du projet
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Nom** : INeedMedic  
+**Type** : Application Web Full-Stack  
+**Statut** : Projet personnel en développement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Description
 
-## Learn More
+Application de prise de rendez-vous en ligne pour des praticiens de santé et bien-être, conçue comme un produit prêt pour la production.
 
-To learn more about Next.js, take a look at the following resources:
+### Démonstration de compétences
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- ✅ Conception d'un produit web de bout en bout
+- ✅ Implémentation d'une logique métier réaliste
+- ✅ Utilisation d'une stack JavaScript moderne
+- ✅ Architecture backend propre et maintenable
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔍 Contexte & problématique
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Situation actuelle
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilisent encore :
+
+- 📝 Des agendas papier
+- 🔧 Des outils peu flexibles
+- 💰 Des solutions coûteuses ou surdimensionnées
+
+### Problèmes identifiés
+
+| Problème                              | Impact                     |
+| ------------------------------------- | -------------------------- |
+| Gestion manuelle des créneaux         | Perte de temps             |
+| Risques de double réservation         | Conflits d'agenda          |
+| Annulations mal gérées                | Mauvaise expérience client |
+| Manque de visibilité pour les clients | Barrière à l'accessibilité |
+
+---
+
+## 🎯 Objectifs
+
+### Objectifs fonctionnels
+
+- 📅 Permettre aux clients de réserver un rendez-vous en ligne
+- 🗓️ Offrir aux praticiens un agenda clair et flexible
+- 📧 Automatiser les confirmations et annulations par email
+
+### Objectifs techniques
+
+- 🏗️ Construire une application full-stack avec Next.js
+- ⚙️ Implémenter une logique métier côté serveur
+- 🗄️ Concevoir une base de données cohérente
+- 🚀 Déployer une application prête à la production
+
+---
+
+## 🛠️ Stack technique
+
+### Frontend
+
+| Technologie              | Usage                 |
+| ------------------------ | --------------------- |
+| **Next.js (App Router)** | Framework React       |
+| **React**                | Interface utilisateur |
+| **TypeScript**           | Typage statique       |
+| **Tailwind CSS**         | Styles                |
+| **shadcn/ui**            | Composants UI         |
+
+### Backend
+
+- **Next.js Backend**
+  - Server Actions
+  - Route Handlers
+- **Prisma ORM** - Gestion de la base de données
+- **PostgreSQL** - Base de données relationnelle
+
+### Authentification
+
+- **Next-Auth** - Gestion de l'authentification
+- Gestion des rôles : `client`, `praticien`
+
+### Notifications
+
+- **Resend** - Service d'envoi d'emails
+- Templates d'emails en React
+
+### Déploiement
+
+- **Vercel** - Hébergement de l'application
+- **Neon** - Base de données PostgreSQL managée
+
+---
+
+## 👥 Utilisateurs & rôles
+
+### 👤 Client
+
+- ✅ Créer un compte
+- 🔍 Consulter les praticiens disponibles
+- 📅 Réserver / annuler un rendez-vous
+- 📧 Recevoir des emails de confirmation
+
+### 👨‍⚕️ Praticien
+
+- 🕐 Gérer ses disponibilités
+- 📊 Consulter son agenda
+- 👀 Voir les rendez-vous à venir
+- ❌ Annuler un rendez-vous
+
+---
+
+## ⚡ Fonctionnalités principales (MVP)
+
+### 🔐 Authentification
+
+- Inscription / connexion sécurisée
+- Gestion des rôles utilisateurs
+- Protection des routes par authentification
+
+### 👨‍⚕️ Gestion des praticiens
+
+- Création et modification du profil praticien
+- Définition des horaires de travail
+- Gestion des indisponibilités (congés, jours fériés)
+
+### 📅 Prise de rendez-vous
+
+- Affichage dynamique des créneaux disponibles
+- Prévention des doubles réservations
+- Système de réservation / annulation
+- Règles d'annulation (ex : délai de 24h minimum)
+
+### 🗓️ Agenda praticien
+
+- Vue calendrier interactive
+- Liste détaillée des rendez-vous
+- Filtrage par date et statut
+
+### 📧 Notifications automatiques
+
+- ✅ Confirmation de rendez-vous
+- ❌ Notification d'annulation
+
+---
+
+## 📐 Logique métier
+
+### Règles de gestion
+
+| Règle                       | Description                                                              |
+| --------------------------- | ------------------------------------------------------------------------ |
+| **Unicité des créneaux**    | Un créneau ne peut être réservé qu'une seule fois                        |
+| **Prévention des conflits** | Un praticien ne peut pas avoir deux rendez-vous simultanés               |
+| **Rendez-vous passés**      | Les rendez-vous passés ne sont pas modifiables                           |
+| **Délai d'annulation**      | Les annulations sont bloquées en-dessous d'un délai défini (ex: 24h)     |
+| **Validation des horaires** | Les rendez-vous ne peuvent être pris que pendant les horaires de travail |
+
+---
