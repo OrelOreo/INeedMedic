@@ -14,7 +14,13 @@ import {
   ROLE_REQUIRED_MESSAGE,
   EMAIL_MAX_LENGTH_MESSAGE,
   NAME_MAX_LENGTH_MESSAGE,
-} from "./helpers/validation-messages-helpers";
+  SESSION_NOT_FOUND_MESSAGE,
+  CURRENT_PASSWORD_INCORRECT_MESSAGE,
+  PASSWORD_UPDATE_SUCCESS_MESSAGE,
+  PASSWORD_UPDATE_ERROR_MESSAGE,
+  GENERIC_ERROR_MESSAGE,
+  REGISTRATION_SUCCESS_MESSAGE,
+} from "./helpers/messages-helpers";
 import {
   createForbiddenErrorMessage,
   createUnauthorizedErrorMessage,
@@ -22,7 +28,7 @@ import {
   createValidationSuccessMessage,
   createValidationErrorMessage,
   createCatchErrorMessage,
-} from "./helpers";
+} from "@/lib/helpers/form-state-helpers";
 
 export type FormInfosState = {
   id: string;
@@ -81,7 +87,7 @@ const userPasswordFormSchema = z
 const registerSchema = z
   .object({
     name: z.string().min(2, NAME_MIN_LENGTH_MESSAGE),
-    email: z.email(EMAIL_INVALID_MESSAGE),
+    email: z.email(EMAIL_INVALID_MESSAGE).toLowerCase(),
     password: z.string().min(8, PASSWORD_MIN_LENGTH_MESSAGE),
     confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
     role: z.enum(["CLIENT", "PRACTITIONER"], {
@@ -177,7 +183,7 @@ export async function updateUserPassword(
   if (!session?.user?.id) {
     return {
       errors: {
-        globalErrors: ["Session non trouvée. Veuillez vous reconnecter."],
+        globalErrors: [SESSION_NOT_FOUND_MESSAGE],
       },
       message: null,
     };
@@ -197,7 +203,7 @@ export async function updateUserPassword(
         newPassword: errorTree.properties?.newPassword?.errors,
         confirmPassword: errorTree.properties?.confirmPassword?.errors,
       },
-      message: "Échec de la validation. Veuillez vérifier vos données.",
+      message: null,
     };
   }
 
@@ -208,7 +214,7 @@ export async function updateUserPassword(
     if (!isValid) {
       return {
         errors: {
-          currentPassword: ["Le mot de passe actuel est incorrect"],
+          currentPassword: [CURRENT_PASSWORD_INCORRECT_MESSAGE],
         },
         message: null,
       };
@@ -222,15 +228,13 @@ export async function updateUserPassword(
 
     return {
       errors: undefined,
-      message: "Mot de passe mis à jour avec succès",
+      message: PASSWORD_UPDATE_SUCCESS_MESSAGE,
     };
   } catch (error) {
     console.error("Error updating password:", error);
     return {
       errors: {
-        globalErrors: [
-          "Une erreur est survenue lors de la mise à jour du mot de passe",
-        ],
+        globalErrors: [PASSWORD_UPDATE_ERROR_MESSAGE],
       },
       message: null,
     };
@@ -259,7 +263,7 @@ export async function registerUser(
         confirmPassword: errorTree.properties?.confirmPassword?.errors,
         role: errorTree.properties?.role?.errors,
       },
-      message: "Échec de la validation. Veuillez vérifier vos données.",
+      message: null,
     };
   }
   const { name, email, password, role } = validatedFields.data;
@@ -268,7 +272,7 @@ export async function registerUser(
     if (existingUser) {
       return {
         errors: {
-          globalErrors: ["Une erreur est survenue."],
+          globalErrors: [GENERIC_ERROR_MESSAGE],
         },
         message: null,
       };
@@ -283,16 +287,14 @@ export async function registerUser(
       },
     });
     return {
-      errors: undefined,
-      message: "Inscription réussie. Vous pouvez maintenant vous connecter.",
+      errors: {},
+      message: REGISTRATION_SUCCESS_MESSAGE,
     };
   } catch (error) {
     console.error("Error ", error);
     return {
       errors: {
-        globalErrors: [
-          "Une erreur est survenue lors de la mise à jour du mot de passe",
-        ],
+        globalErrors: [PASSWORD_UPDATE_ERROR_MESSAGE],
       },
       message: null,
     };
