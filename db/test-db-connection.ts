@@ -77,7 +77,7 @@ async function testDatabaseConnection() {
     });
     console.log("✅ Osteopath created:", osteopath);
 
-    // Test 3c: Créer un troisième praticien (Psychologue)
+    // Test 3: Créer un troisième praticien (Psychologue)
     console.log("\n📝 Creating third practitioner user (Psychologist)...");
     const psychologist = await prisma.user.create({
       data: {
@@ -106,99 +106,99 @@ async function testDatabaseConnection() {
     console.log("✅ Psychologist created:", psychologist);
 
     // Test 4: Créer des disponibilités pour le praticien
-    console.log("\n📝 Creating availability slots...");
-    const availabilities = await prisma.availability.createMany({
-      data: [
-        {
-          practitionerId: practitioner.practitioner!.id,
-          dayOfWeek: "MONDAY",
-          startTime: "09:00",
-          endTime: "12:00",
-        },
-        {
-          practitionerId: practitioner.practitioner!.id,
-          dayOfWeek: "MONDAY",
-          startTime: "14:00",
-          endTime: "18:00",
-        },
-        {
-          practitionerId: practitioner.practitioner!.id,
-          dayOfWeek: "TUESDAY",
-          startTime: "09:00",
-          endTime: "17:00",
-        },
-      ],
-    });
-    console.log(`✅ Created ${availabilities.count} availability slots`);
+    // console.log("\n📝 Creating availability slots...");
+    // const availabilities = await prisma.availability.createMany({
+    //   data: [
+    //     {
+    //       practitionerId: practitioner.practitioner!.id,
+    //       dayOfWeek: "MONDAY",
+    //       startTime: "09:00",
+    //       endTime: "12:00",
+    //     },
+    //     {
+    //       practitionerId: practitioner.practitioner!.id,
+    //       dayOfWeek: "MONDAY",
+    //       startTime: "14:00",
+    //       endTime: "18:00",
+    //     },
+    //     {
+    //       practitionerId: practitioner.practitioner!.id,
+    //       dayOfWeek: "TUESDAY",
+    //       startTime: "09:00",
+    //       endTime: "17:00",
+    //     },
+    //   ],
+    // });
+    // console.log(`✅ Created ${availabilities.count} availability slots`);
 
-    // Test 4b: Créer des disponibilités pour l'ostéopathe
-    console.log("\n📝 Creating availability slots for osteopath...");
-    const osteopathAvailabilities = await prisma.availability.createMany({
-      data: [
-        {
-          practitionerId: osteopath.practitioner!.id,
-          dayOfWeek: "WEDNESDAY",
-          startTime: "08:00",
-          endTime: "12:00",
-        },
-        {
-          practitionerId: osteopath.practitioner!.id,
-          dayOfWeek: "THURSDAY",
-          startTime: "14:00",
-          endTime: "19:00",
-        },
-        {
-          practitionerId: osteopath.practitioner!.id,
-          dayOfWeek: "FRIDAY",
-          startTime: "09:00",
-          endTime: "16:00",
-        },
-      ],
-    });
-    console.log(
-      `✅ Created ${osteopathAvailabilities.count} availability slots for osteopath`
-    );
+    // // Test 4b: Créer des disponibilités pour l'ostéopathe
+    // console.log("\n📝 Creating availability slots for osteopath...");
+    // const osteopathAvailabilities = await prisma.availability.createMany({
+    //   data: [
+    //     {
+    //       practitionerId: osteopath.practitioner!.id,
+    //       dayOfWeek: "WEDNESDAY",
+    //       startTime: "08:00",
+    //       endTime: "12:00",
+    //     },
+    //     {
+    //       practitionerId: osteopath.practitioner!.id,
+    //       dayOfWeek: "THURSDAY",
+    //       startTime: "14:00",
+    //       endTime: "19:00",
+    //     },
+    //     {
+    //       practitionerId: osteopath.practitioner!.id,
+    //       dayOfWeek: "FRIDAY",
+    //       startTime: "09:00",
+    //       endTime: "16:00",
+    //     },
+    //   ],
+    // });
+    // console.log(
+    //   `✅ Created ${osteopathAvailabilities.count} availability slots for osteopath`
+    // );
 
-    // Test 4c: Créer des disponibilités pour le psychologue
-    console.log("\n📝 Creating availability slots for psychologist...");
-    const psychologistAvailabilities = await prisma.availability.createMany({
-      data: [
-        {
-          practitionerId: psychologist.practitioner!.id,
-          dayOfWeek: "MONDAY",
-          startTime: "10:00",
-          endTime: "18:00",
-        },
-        {
-          practitionerId: psychologist.practitioner!.id,
-          dayOfWeek: "WEDNESDAY",
-          startTime: "10:00",
-          endTime: "18:00",
-        },
-        {
-          practitionerId: psychologist.practitioner!.id,
-          dayOfWeek: "FRIDAY",
-          startTime: "10:00",
-          endTime: "16:00",
-        },
-      ],
-    });
-    console.log(
-      `✅ Created ${psychologistAvailabilities.count} availability slots for psychologist`
-    );
+    // // Test 4c: Créer des disponibilités pour le psychologue
+    // console.log("\n📝 Creating availability slots for psychologist...");
+    // const psychologistAvailabilities = await prisma.availability.createMany({
+    //   data: [
+    //     {
+    //       practitionerId: psychologist.practitioner!.id,
+    //       dayOfWeek: "MONDAY",
+    //       startTime: "10:00",
+    //       endTime: "18:00",
+    //     },
+    //     {
+    //       practitionerId: psychologist.practitioner!.id,
+    //       dayOfWeek: "WEDNESDAY",
+    //       startTime: "10:00",
+    //       endTime: "18:00",
+    //     },
+    //     {
+    //       practitionerId: psychologist.practitioner!.id,
+    //       dayOfWeek: "FRIDAY",
+    //       startTime: "10:00",
+    //       endTime: "16:00",
+    //     },
+    //   ],
+    // });
+    // console.log(
+    //   `✅ Created ${psychologistAvailabilities.count} availability slots for psychologist`
+    // );
 
     // Test 5: Créer une indisponibilité (congés)
-    console.log("\n📝 Creating unavailability period...");
-    const unavailability = await prisma.unavailability.create({
-      data: {
-        practitionerId: practitioner.practitioner!.id,
-        startDate: new Date("2025-01-15"),
-        endDate: new Date("2025-01-22"),
-        reason: "Congés annuels",
-        isAllDay: true,
-      },
-    });
-    console.log("✅ Unavailability created:", unavailability);
+    // console.log("\n📝 Creating unavailability period...");
+    // const unavailability = await prisma.unavailability.create({
+    //   data: {
+    //     practitionerId: practitioner.practitioner!.id,
+    //     startDate: new Date("2025-01-15"),
+    //     endDate: new Date("2025-01-22"),
+    //     reason: "Congés annuels",
+    //     isAllDay: true,
+    //   },
+    // });
+    // console.log("✅ Unavailability created:", unavailability);
 
     // Test 6: Créer un rendez-vous
     console.log("\n📝 Creating sample appointment...");
