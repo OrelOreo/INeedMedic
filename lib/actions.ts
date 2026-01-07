@@ -71,6 +71,16 @@ export type RegisterFormState = {
   message?: string | null;
 };
 
+export type AvailabilityFormState = {
+  errors?: {
+    startTime?: string[];
+    endTime?: string[];
+    dayOfWeek?: string[];
+    globalErrors?: string[];
+  };
+  message?: string | null;
+};
+
 const userProfileFormSchema = z.object({
   name: z
     .string()
@@ -402,11 +412,19 @@ export async function isAvailabilityOverlap(
   return existingAvailability ? true : false;
 }
 
-export async function createAvailability(prevState: any, formData: FormData) {
+export async function createAvailability(
+  prevState: AvailabilityFormState,
+  formData: FormData
+) {
   const session = await getSession();
 
   if (!session?.user?.id) {
-    return { statut: "error", message: NON_AUTHORIZED_ACTION };
+    return {
+      errors: {
+        globalErrors: [SESSION_NOT_FOUND_MESSAGE],
+      },
+      message: null,
+    };
   }
 
   const validatedFields = availabilityFormSchema.safeParse({

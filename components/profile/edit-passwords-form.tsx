@@ -15,10 +15,10 @@ export default function EditPasswordsForm() {
     errors: {},
   };
   const updateUserProfileWithId = async (
-    prevState: FormPasswordState,
+    prevState: FormPasswordState | undefined,
     formData: FormData
   ) => {
-    return updateUserPassword(prevState, formData);
+    return updateUserPassword(prevState ?? initialState, formData);
   };
   const [state, formAction] = useActionState(
     updateUserProfileWithId,

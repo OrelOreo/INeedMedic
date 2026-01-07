@@ -26,10 +26,10 @@ export default function EditProfileForm({ user }: { user: UserProfileProps }) {
     errors: {},
   };
   const updateUserProfileWithId = async (
-    prevState: FormInfosState,
+    prevState: FormInfosState | undefined,
     formData: FormData
   ) => {
-    return updateUserProfile(prevState, formData);
+    return updateUserProfile(prevState ?? initialState, formData);
   };
   const [state, formAction] = useActionState(
     updateUserProfileWithId,
