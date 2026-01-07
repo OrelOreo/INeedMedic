@@ -1,13 +1,13 @@
 "use client";
 
-import { Appointment } from "@prisma/client";
 import { Button } from "../ui/button";
 import { cancelAppointment } from "@/lib/actions";
 import { toast } from "sonner";
 import { useState } from "react";
+import { AppointmentWithRelations } from "@/types/appointment-with-relations";
 
 type CancelAppointmentButtonProps = {
-  appointment: Appointment;
+  appointment: AppointmentWithRelations;
 };
 
 export default function CancelAppointmentButton({

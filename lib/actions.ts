@@ -32,7 +32,8 @@ import {
   createValidationErrorMessage,
   createCatchErrorMessage,
 } from "@/lib/helpers/form-state-helpers";
-import { Appointment, AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus } from "@prisma/client";
+import type { AppointmentWithRelations } from "@/types/appointment-with-relations";
 
 export type FormInfosState = {
   id: string;
@@ -305,7 +306,7 @@ export async function registerUser(
   }
 }
 
-export async function cancelAppointment(appointment: Appointment) {
+export async function cancelAppointment(appointment: AppointmentWithRelations) {
   const session = await getSession();
 
   if (!session?.user?.id) {
@@ -314,7 +315,7 @@ export async function cancelAppointment(appointment: Appointment) {
 
   if (
     appointment.clientId !== session.user.id &&
-    appointment.practitionerId !== session.user.id
+    appointment.practitioner.userId !== session.user.id
   ) {
     return { statut: "error", message: NON_AUTHORIZED_ACTION };
   }
@@ -336,7 +337,7 @@ export async function cancelAppointment(appointment: Appointment) {
       message: APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE,
     };
   } catch (error) {
-    console.log("🚀 ~ cancelAppointment ~ error:", error);
+    console.error("🚀 ~ cancelAppointment ~ error:", error);
     return {
       statut: "error",
       message: APPOINTMENT_CANCELLATION_ERROR_MESSAGE,
