@@ -11,20 +11,8 @@ export async function getCurrentUser() {
   const session = await getSession();
   return session?.user;
 }
-
-// Fonction helper pour vérifier le rôle
-export async function requireRole(
-  allowedRoles: Array<"CLIENT" | "PRACTITIONER">
-) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    throw new Error("Non authentifié");
-  }
-
-  if (!allowedRoles.includes(user.role)) {
-    throw new Error("Non autorisé");
-  }
-
-  return user;
+// Fonction helper pour savoir le rôle de l'utilisateur courant
+export async function getCurrentRole() {
+  const session = await getSession();
+  return session?.user.role;
 }

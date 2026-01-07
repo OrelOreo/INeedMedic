@@ -9,11 +9,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Calendar, Clock, MapPin } from "lucide-react";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus, Role } from "@prisma/client";
 import { formatDate, formatTime } from "@/lib/utils";
 import CancelAppointmentButton from "./cancel-appointment-button";
+import { getCurrentRole, getCurrentUser } from "@/lib/helpers/auth-helpers";
+import { redirect } from "next/navigation";
 
 export async function AppointmentsTable() {
+  const role = await getCurrentRole();
+  if (!role) {
+    redirect("/login");
+  }
+
   const appointments = await getAppointmentsByUser();
 
   const canCancelAppointment = (appointment: (typeof appointments)[0]) => {
@@ -64,10 +71,15 @@ export async function AppointmentsTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Praticien</TableHead>
+            <TableHead>
+              {role === "PRACTITIONER" ? "Patient" : "Praticien"}
+            </TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Heure</TableHead>
-            <TableHead>Adresse</TableHead>
+            <TableHead>
+              {" "}
+              {role === "PRACTITIONER" ? "Note du patient" : "Adresse"}
+            </TableHead>
             <TableHead>Statut</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -78,13 +90,16 @@ export async function AppointmentsTable() {
               <TableCell>
                 <div>
                   <div className="font-medium">
-                    {appointment.practitioner.user.name}
+                    {role === "PRACTITIONER"
+                      ? appointment.client?.name
+                      : appointment.practitioner.user.name}
                   </div>
-                  {appointment.practitioner?.specialty && (
-                    <div className="text-sm text-muted-foreground">
-                      {appointment.practitioner.specialty}
-                    </div>
-                  )}
+                  {appointment.practitioner?.specialty &&
+                    role !== "PRACTITIONER" && (
+                      <div className="text-sm text-muted-foreground">
+                        {appointment.practitioner.specialty}
+                      </div>
+                    )}
                 </div>
               </TableCell>
               <TableCell>
@@ -100,11 +115,18 @@ export async function AppointmentsTable() {
                 </div>
               </TableCell>
               <TableCell>
-                {appointment.practitioner?.address && (
+                {appointment.practitioner?.address &&
+                role !== "PRACTITIONER" ? (
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span className="max-w-xs truncate">
                       {appointment.practitioner.address}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="max-w-xs truncate">
+                      {appointment.clientNotes}
                     </span>
                   </div>
                 )}
