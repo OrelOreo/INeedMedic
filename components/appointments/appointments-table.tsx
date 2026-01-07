@@ -1,19 +1,14 @@
 import { getAppointmentsByUser } from "@/lib/data";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar, Clock, MapPin } from "lucide-react";
-import { AppointmentStatus, Role } from "@prisma/client";
-import { formatDate, formatTime } from "@/lib/utils";
-import CancelAppointmentButton from "./cancel-appointment-button";
-import { getCurrentRole, getCurrentUser } from "@/lib/helpers/auth-helpers";
+import { getCurrentRole } from "@/lib/helpers/auth-helpers";
 import { redirect } from "next/navigation";
+import { AppointmentTableRow } from "./appointments-table-row";
 
 export async function AppointmentsTable() {
   const role = await getCurrentRole();
@@ -23,62 +18,22 @@ export async function AppointmentsTable() {
 
   const appointments = await getAppointmentsByUser();
 
-  const canCancelAppointment = (appointment: (typeof appointments)[0]) => {
-    const now = new Date();
-    const appointmentDate = new Date(appointment.startDateTime);
-    const hoursUntilAppointment =
-      (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-    const isFuture = appointmentDate > now;
-    const isMoreThan24Hours = hoursUntilAppointment > 24;
-    const isNotCancelled = appointment.status !== AppointmentStatus.CANCELLED;
-
-    return isFuture && isMoreThan24Hours && isNotCancelled;
-  };
-
-  const getStatusBadgeVariant = (status: AppointmentStatus) => {
-    switch (status) {
-      case AppointmentStatus.CONFIRMED:
-        return "default";
-      case AppointmentStatus.PENDING:
-        return "secondary";
-      case AppointmentStatus.CANCELLED:
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
-
-  const getStatusLabel = (status: AppointmentStatus) => {
-    switch (status) {
-      case AppointmentStatus.CONFIRMED:
-        return "Confirmé";
-      case AppointmentStatus.PENDING:
-        return "En attente";
-      case AppointmentStatus.CANCELLED:
-        return "Annulé";
-      default:
-        return status;
-    }
-  };
-
   if (appointments.length === 0) {
     return <p className="text-gray-500">Aucun rendez-vous trouvé.</p>;
   }
+
+  const isPractitioner = role === "PRACTITIONER";
 
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>
-              {role === "PRACTITIONER" ? "Patient" : "Praticien"}
-            </TableHead>
+            <TableHead>{isPractitioner ? "Patient" : "Praticien"}</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Heure</TableHead>
             <TableHead>
-              {" "}
-              {role === "PRACTITIONER" ? "Note du patient" : "Adresse"}
+              {isPractitioner ? "Note du patient" : "Adresse"}
             </TableHead>
             <TableHead>Statut</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -86,62 +41,11 @@ export async function AppointmentsTable() {
         </TableHeader>
         <TableBody>
           {appointments.map((appointment) => (
-            <TableRow key={appointment.id}>
-              <TableCell>
-                <div>
-                  <div className="font-medium">
-                    {role === "PRACTITIONER"
-                      ? appointment.client?.name
-                      : appointment.practitioner.user.name}
-                  </div>
-                  {appointment.practitioner?.specialty &&
-                    role !== "PRACTITIONER" && (
-                      <div className="text-sm text-muted-foreground">
-                        {appointment.practitioner.specialty}
-                      </div>
-                    )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{formatDate(appointment.startDateTime)}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{formatTime(appointment.startDateTime)}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                {appointment.practitioner?.address &&
-                role !== "PRACTITIONER" ? (
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="max-w-xs truncate">
-                      {appointment.practitioner.address}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <span className="max-w-xs truncate">
-                      {appointment.clientNotes}
-                    </span>
-                  </div>
-                )}
-              </TableCell>
-              <TableCell>
-                <Badge variant={getStatusBadgeVariant(appointment.status)}>
-                  {getStatusLabel(appointment.status)}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                {canCancelAppointment(appointment) && (
-                  <CancelAppointmentButton appointment={appointment} />
-                )}
-              </TableCell>
-            </TableRow>
+            <AppointmentTableRow
+              key={appointment.id}
+              appointment={appointment}
+              role={role}
+            />
           ))}
         </TableBody>
       </Table>
