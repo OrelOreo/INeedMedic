@@ -14,6 +14,7 @@ export const NAV_ITEMS = {
 
   practitioner: [
     { label: "Dashboard", href: "/dashboard" },
+    { label: "Profil", href: "/profile" },
     { label: "Rendez-vous", href: "/dashboard/appointments" },
     { label: "Disponibilités", href: "/dashboard/availability" },
   ] as const satisfies readonly NavItem[],
