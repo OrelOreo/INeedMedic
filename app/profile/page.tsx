@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield } from "lucide-react";
-import { getSession } from "@/lib/auth-helpers";
+import { getSession } from "@/lib/helpers/auth-helpers";
 import { getCurrentUser } from "@/lib/data";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";

@@ -4,7 +4,17 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/db/prisma";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { getSession } from "./auth-helpers";
+import { getSession } from "./helpers/auth-helpers";
+import {
+  REQUIRE_PASSWORD_MESSAGE,
+  PASSWORDS_DO_NOT_MATCH_MESSAGE,
+  NAME_MIN_LENGTH_MESSAGE,
+  EMAIL_INVALID_MESSAGE,
+  PASSWORD_MIN_LENGTH_MESSAGE,
+  ROLE_REQUIRED_MESSAGE,
+  EMAIL_MAX_LENGTH_MESSAGE,
+  NAME_MAX_LENGTH_MESSAGE,
+} from "./helpers/validation-messages-helpers";
 import {
   createForbiddenErrorMessage,
   createUnauthorizedErrorMessage,
@@ -47,38 +57,39 @@ export type RegisterFormState = {
 };
 
 const userProfileFormSchema = z.object({
-  name: z.string().min(2, "Nom requis").max(30, "Nom trop long").trim(),
+  name: z
+    .string()
+    .min(2, NAME_MIN_LENGTH_MESSAGE)
+    .max(30, NAME_MAX_LENGTH_MESSAGE),
   email: z
-    .email("Adresse e-mail invalide")
-    .max(30, "Email trop long")
+    .email(EMAIL_INVALID_MESSAGE)
+    .max(30, EMAIL_MAX_LENGTH_MESSAGE)
     .toLowerCase(),
 });
 
 const userPasswordFormSchema = z
   .object({
-    currentPassword: z.string().min(6, "Mot de passe actuel requis"),
-    newPassword: z.string().min(6, "Nouveau mot de passe requis"),
-    confirmPassword: z.string().min(6, "Confirmation du mot de passe requise"),
+    currentPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
+    newPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
+    confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas",
+    message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
     path: ["confirmPassword"],
   });
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-    email: z.email("Email invalide"),
-    password: z
-      .string()
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-    confirmPassword: z.string().min(6, "Confirmation du mot de passe requise"),
+    name: z.string().min(2, NAME_MIN_LENGTH_MESSAGE),
+    email: z.email(EMAIL_INVALID_MESSAGE),
+    password: z.string().min(8, PASSWORD_MIN_LENGTH_MESSAGE),
+    confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
     role: z.enum(["CLIENT", "PRACTITIONER"], {
-      message: "Veuillez sélectionner un type de compte",
+      message: ROLE_REQUIRED_MESSAGE,
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas",
+    message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
     path: ["confirmPassword"],
   });
 
@@ -160,7 +171,7 @@ export async function updateUserProfile(
 export async function updateUserPassword(
   prevState: FormPasswordState,
   formData: FormData
-): Promise<FormPasswordState> {
+) {
   const session = await getSession();
 
   if (!session?.user?.id) {
@@ -237,7 +248,6 @@ export async function registerUser(
     confirmPassword: formData.get("confirmPassword"),
     role: formData.get("role"),
   });
-  console.log("🚀 ~ registerUser ~ validatedFields:", validatedFields.data);
 
   if (!validatedFields.success) {
     const errorTree = z.treeifyError(validatedFields.error);
