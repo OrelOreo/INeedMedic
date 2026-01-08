@@ -1,44 +1,34 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/db/prisma";
-import { z } from "zod";
-import bcrypt from "bcryptjs";
-import { getSession } from "./helpers/auth-helpers";
+import z from "zod";
 import {
-  REQUIRE_PASSWORD_MESSAGE,
-  PASSWORDS_DO_NOT_MATCH_MESSAGE,
-  NAME_MIN_LENGTH_MESSAGE,
-  EMAIL_INVALID_MESSAGE,
-  PASSWORD_MIN_LENGTH_MESSAGE,
-  ROLE_REQUIRED_MESSAGE,
-  EMAIL_MAX_LENGTH_MESSAGE,
-  NAME_MAX_LENGTH_MESSAGE,
-  SESSION_NOT_FOUND_MESSAGE,
   CURRENT_PASSWORD_INCORRECT_MESSAGE,
-  PASSWORD_UPDATE_SUCCESS_MESSAGE,
-  PASSWORD_UPDATE_ERROR_MESSAGE,
+  EMAIL_INVALID_MESSAGE,
+  EMAIL_MAX_LENGTH_MESSAGE,
   GENERIC_ERROR_MESSAGE,
+  NAME_MAX_LENGTH_MESSAGE,
+  NAME_MIN_LENGTH_MESSAGE,
+  PASSWORD_MIN_LENGTH_MESSAGE,
+  PASSWORD_UPDATE_ERROR_MESSAGE,
+  PASSWORD_UPDATE_SUCCESS_MESSAGE,
+  PASSWORDS_DO_NOT_MATCH_MESSAGE,
   REGISTRATION_SUCCESS_MESSAGE,
-} from "./helpers/messages-helpers";
+  REQUIRE_PASSWORD_MESSAGE,
+  ROLE_REQUIRED_MESSAGE,
+  SESSION_NOT_FOUND_MESSAGE,
+} from "../helpers/messages-helpers";
+import { prisma } from "@/db/prisma";
+import bcrypt from "bcryptjs";
+import { getSession } from "../helpers/auth-helpers";
 import {
+  createCatchErrorMessage,
+  createEmailExistsErrorMessage,
   createForbiddenErrorMessage,
   createUnauthorizedErrorMessage,
-  createEmailExistsErrorMessage,
-  createValidationSuccessProfileMessage,
   createValidationErrorMessage,
-  createCatchErrorMessage,
-} from "@/lib/helpers/form-state-helpers";
-
-export type FormInfosState = {
-  id: string;
-  errors?: {
-    name?: string[];
-    email?: string[];
-    globalErrors?: string[];
-  };
-  message?: string | null;
-};
+  createValidationSuccessProfileMessage,
+} from "../helpers/form-state-helpers";
+import { revalidatePath } from "next/cache";
 
 export type FormPasswordState = {
   errors?: {
@@ -62,6 +52,31 @@ export type RegisterFormState = {
   message?: string | null;
 };
 
+export type FormInfosState = {
+  id: string;
+  errors?: {
+    name?: string[];
+    email?: string[];
+    globalErrors?: string[];
+  };
+  message?: string | null;
+};
+
+const registerFormSchema = z
+  .object({
+    name: z.string().min(2, NAME_MIN_LENGTH_MESSAGE),
+    email: z.email(EMAIL_INVALID_MESSAGE).toLowerCase(),
+    password: z.string().min(8, PASSWORD_MIN_LENGTH_MESSAGE),
+    confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
+    role: z.enum(["CLIENT", "PRACTITIONER"], {
+      message: ROLE_REQUIRED_MESSAGE,
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
+    path: ["confirmPassword"],
+  });
+
 const userProfileFormSchema = z.object({
   name: z
     .string()
@@ -80,21 +95,6 @@ const userPasswordFormSchema = z
     confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
-    path: ["confirmPassword"],
-  });
-
-const registerFormSchema = z
-  .object({
-    name: z.string().min(2, NAME_MIN_LENGTH_MESSAGE),
-    email: z.email(EMAIL_INVALID_MESSAGE).toLowerCase(),
-    password: z.string().min(8, PASSWORD_MIN_LENGTH_MESSAGE),
-    confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
-    role: z.enum(["CLIENT", "PRACTITIONER"], {
-      message: ROLE_REQUIRED_MESSAGE,
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
     message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
     path: ["confirmPassword"],
   });
@@ -123,6 +123,66 @@ async function isPasswordValid(userId: string, password: string) {
     return isPasswordValid;
   } catch (error) {
     return false;
+  }
+}
+
+export async function registerUser(
+  prevState: RegisterFormState,
+  formData: FormData
+) {
+  const validatedFields = registerFormSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+    role: formData.get("role"),
+  });
+
+  if (!validatedFields.success) {
+    const errorTree = z.treeifyError(validatedFields.error);
+    return {
+      errors: {
+        name: errorTree.properties?.name?.errors,
+        email: errorTree.properties?.email?.errors,
+        password: errorTree.properties?.password?.errors,
+        confirmPassword: errorTree.properties?.confirmPassword?.errors,
+        role: errorTree.properties?.role?.errors,
+      },
+      message: null,
+    };
+  }
+  const { name, email, password, role } = validatedFields.data;
+  try {
+    const existingUser = await isEmailExist(email);
+    if (existingUser) {
+      return {
+        errors: {
+          globalErrors: [GENERIC_ERROR_MESSAGE],
+        },
+        message: null,
+      };
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+      },
+    });
+    return {
+      errors: {},
+      message: REGISTRATION_SUCCESS_MESSAGE,
+    };
+  } catch (error) {
+    console.error("Error ", error);
+    return {
+      errors: {
+        globalErrors: [GENERIC_ERROR_MESSAGE],
+      },
+      message: null,
+    };
   }
 }
 
@@ -232,66 +292,6 @@ export async function updateUserPassword(
     };
   } catch (error) {
     console.error("Error updating password:", error);
-    return {
-      errors: {
-        globalErrors: [PASSWORD_UPDATE_ERROR_MESSAGE],
-      },
-      message: null,
-    };
-  }
-}
-
-export async function registerUser(
-  prevState: RegisterFormState,
-  formData: FormData
-) {
-  const validatedFields = registerFormSchema.safeParse({
-    name: formData.get("name"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-    confirmPassword: formData.get("confirmPassword"),
-    role: formData.get("role"),
-  });
-
-  if (!validatedFields.success) {
-    const errorTree = z.treeifyError(validatedFields.error);
-    return {
-      errors: {
-        name: errorTree.properties?.name?.errors,
-        email: errorTree.properties?.email?.errors,
-        password: errorTree.properties?.password?.errors,
-        confirmPassword: errorTree.properties?.confirmPassword?.errors,
-        role: errorTree.properties?.role?.errors,
-      },
-      message: null,
-    };
-  }
-  const { name, email, password, role } = validatedFields.data;
-  try {
-    const existingUser = await isEmailExist(email);
-    if (existingUser) {
-      return {
-        errors: {
-          globalErrors: [GENERIC_ERROR_MESSAGE],
-        },
-        message: null,
-      };
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        role,
-      },
-    });
-    return {
-      errors: {},
-      message: REGISTRATION_SUCCESS_MESSAGE,
-    };
-  } catch (error) {
-    console.error("Error ", error);
     return {
       errors: {
         globalErrors: [PASSWORD_UPDATE_ERROR_MESSAGE],

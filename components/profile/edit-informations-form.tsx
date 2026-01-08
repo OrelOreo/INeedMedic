@@ -1,6 +1,6 @@
 "use client";
 
-import { FormInfosState, updateUserProfile } from "@/lib/actions";
+import { FormInfosState, updateUserProfile } from "@/lib/server-actions/index";
 import { User, Mail, AlertCircleIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";

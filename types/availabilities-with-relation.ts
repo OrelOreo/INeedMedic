@@ -1,4 +1,4 @@
-import { getAvailabilities } from "@/lib/actions";
+import { getAvailabilities } from "@/lib/server-actions/index";
 
 export type AvailabilitiesWithRelation = Awaited<
   ReturnType<typeof getAvailabilities>

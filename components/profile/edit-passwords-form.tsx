@@ -5,7 +5,10 @@ import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { Alert, AlertTitle } from "../ui/alert";
 import { useActionState } from "react";
-import { updateUserPassword, FormPasswordState } from "@/lib/actions";
+import {
+  updateUserPassword,
+  FormPasswordState,
+} from "@/lib/server-actions/index";
 import { Lock, AlertCircle as AlertCircleIcon } from "lucide-react";
 import SubmitButtons from "../shared/submit-buttons";
 

@@ -20,7 +20,7 @@ import {
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useActionState } from "react";
-import { RegisterFormState, registerUser } from "@/lib/actions";
+import { RegisterFormState, registerUser } from "@/lib/server-actions/index";
 import { User, Mail, Lock, UserCircle, AlertCircle } from "lucide-react";
 
 export default function RegisterForm() {
