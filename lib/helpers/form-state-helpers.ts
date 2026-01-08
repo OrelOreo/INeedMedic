@@ -1,11 +1,12 @@
 import z from "zod";
-import { FormInfosState } from "@/lib/server-actions/index";
+
 import {
   GENERIC_ERROR_MESSAGE,
   NON_AUTHORIZED_ACTION,
   PROFILE_UPDATE_ERROR_MESSAGE,
   PROFILE_UPDATE_SUCCESS_MESSAGE,
 } from "@/lib/helpers/messages-helpers";
+import { FormInfosState } from "@/types/form-state/information-form-state";
 
 function createValidationResponse(
   id: string,

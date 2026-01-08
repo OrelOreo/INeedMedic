@@ -4,15 +4,13 @@ import { Plus } from "lucide-react";
 import { TableCell, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { DayOfWeek } from "@prisma/client";
-import {
-  AvailabilityFormState,
-  createAvailability,
-} from "@/lib/server-actions/index";
+import { createAvailability } from "@/lib/server-actions/index";
 import { useActionState, useEffect } from "react";
 import type { AvailabilitiesWithRelation } from "@/types/availabilities-with-relation";
 import { toast } from "sonner";
 import { useTimeSlots } from "@/hooks/useTimeSlots";
 import { TimeSlotInput } from "./time-slot-input";
+import { AvailabilityFormState } from "@/types/form-state/availabity-form-state";
 
 interface AvailabilitiesTableRowProps {
   dayKey: DayOfWeek;
