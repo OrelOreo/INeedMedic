@@ -27,6 +27,7 @@ import {
   END_TIME_REQUIRED_MESSAGE,
   END_TIME_AFTER_START_TIME_MESSAGE,
   TIME_SLOT_CONFLICT_MESSAGE,
+  AVAILABILITY_CREATION_SUCCESS_MESSAGE,
 } from "./helpers/messages-helpers";
 import {
   createForbiddenErrorMessage,
@@ -472,6 +473,10 @@ export async function createAvailability(
       },
     });
     revalidatePath("/dashboard/availability");
+    return {
+      errors: {},
+      message: AVAILABILITY_CREATION_SUCCESS_MESSAGE,
+    };
   } catch (error) {
     console.error("Error ", error);
     return {
@@ -495,4 +500,26 @@ export async function getAvailabilities() {
     },
   });
   return availabilities;
+}
+
+export async function deleteAvailability(availabilityId: string) {
+  console.log("🚀 ~ deleteAvailability ~ availabilityId:", availabilityId);
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    await prisma.availability.delete({
+      where: {
+        id: availabilityId,
+        practitionerId: session.user.practitionerId!,
+      },
+    });
+    revalidatePath("/dashboard/availability");
+  } catch (error) {
+    console.error("Error deleting availability:", error);
+    throw new Error("Error deleting availability");
+  }
 }

@@ -5,9 +5,18 @@ import { Input } from "../ui/input";
 import { TableCell, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { DayOfWeek } from "@prisma/client";
-import { AvailabilityFormState, createAvailability } from "@/lib/actions";
+import {
+  AvailabilityFormState,
+  createAvailability,
+  deleteAvailability,
+} from "@/lib/actions";
 import { useActionState, useEffect, useState } from "react";
 import type { AvailabilitiesWithRelation } from "@/types/availabilities-with-relation";
+import { toast } from "sonner";
+import {
+  AVAILABILITY_DELETION_ERROR_MESSAGE,
+  AVAILABILITY_DELETION_SUCCESS_MESSAGE,
+} from "@/lib/helpers/messages-helpers";
 
 interface TimeSlot {
   start: string;
@@ -44,7 +53,6 @@ export default function AvailabilitiesTableRow({
     wrappedCreateAvailability,
     initialState
   );
-  console.log("🚀 ~ AvailabilitiesTableRow ~ isPending:", isPending);
 
   const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
@@ -73,6 +81,41 @@ export default function AvailabilitiesTableRow({
     updatedSlots[index][field] = value;
     setSchedule({ ...schedule, [day]: updatedSlots });
   };
+
+  const handleDeleteAvailability = async (
+    startTime: TimeSlot["start"],
+    endTime: TimeSlot["end"],
+    key: DayOfWeek
+  ) => {
+    const availabilityToDelete = availabilities.find(
+      (availability) =>
+        availability.dayOfWeek === key &&
+        availability.startTime === startTime &&
+        availability.endTime === endTime
+    );
+    try {
+      await deleteAvailability(availabilityToDelete!.id);
+      setSchedule((prevSchedule) => {
+        const updatedSlots = prevSchedule[key].filter(
+          (slot) => !(slot.start === startTime && slot.end === endTime)
+        );
+        return { ...prevSchedule, [key]: updatedSlots };
+      });
+      toast.success(AVAILABILITY_DELETION_SUCCESS_MESSAGE);
+    } catch (error) {
+      console.error("Error deleting availability:", error);
+      toast.error(AVAILABILITY_DELETION_ERROR_MESSAGE);
+    }
+  };
+
+  useEffect(() => {
+    if (state.message) {
+      toast.success(state.message);
+    }
+    if (state.errors?.globalErrors) {
+      toast.error(state.errors.globalErrors[0]);
+    }
+  }, [state]);
 
   useEffect(() => {
     const dayAvailabilities = availabilities
@@ -159,6 +202,9 @@ export default function AvailabilitiesTableRow({
                       type="button"
                       variant="ghost"
                       size="icon"
+                      onClick={() =>
+                        handleDeleteAvailability(slot.start, slot.end, key)
+                      }
                       className="cursor-pointer"
                       disabled={isPending}
                     >

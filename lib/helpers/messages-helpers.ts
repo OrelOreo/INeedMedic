@@ -40,3 +40,12 @@ export const END_TIME_AFTER_START_TIME_MESSAGE =
   "L'heure de fin doit être postérieure à l'heure de début.";
 export const TIME_SLOT_CONFLICT_MESSAGE =
   "Ce créneau horaire entre en conflit avec une disponibilité existante.";
+
+export const AVAILABILITY_CREATION_SUCCESS_MESSAGE =
+  "Disponibilité créée avec succès.";
+export const AVAILABILITY_CREATION_ERROR_MESSAGE =
+  "Échec de la création de la disponibilité.";
+export const AVAILABILITY_DELETION_SUCCESS_MESSAGE =
+  "Disponibilité supprimée avec succès.";
+export const AVAILABILITY_DELETION_ERROR_MESSAGE =
+  "Échec de la suppression de la disponibilité.";
