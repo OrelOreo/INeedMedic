@@ -8,9 +8,17 @@ export async function proxy(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  const role = token?.role;
   const { pathname } = request.nextUrl;
 
   if (token && (pathname === "/" || pathname === "/login")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  if (
+    role !== "PRACTITIONER" &&
+    pathname.startsWith("/dashboard/availability")
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
