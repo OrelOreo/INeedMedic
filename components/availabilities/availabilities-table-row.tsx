@@ -1,42 +1,27 @@
 "use client";
 
-import { Check, Clock, Plus, Trash2, X } from "lucide-react";
-import { Input } from "../ui/input";
+import { Plus } from "lucide-react";
 import { TableCell, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { DayOfWeek } from "@prisma/client";
-import {
-  AvailabilityFormState,
-  createAvailability,
-  deleteAvailability,
-} from "@/lib/actions";
-import { useActionState, useEffect, useState } from "react";
+import { AvailabilityFormState, createAvailability } from "@/lib/actions";
+import { useActionState, useEffect } from "react";
 import type { AvailabilitiesWithRelation } from "@/types/availabilities-with-relation";
 import { toast } from "sonner";
-import {
-  AVAILABILITY_DELETION_ERROR_MESSAGE,
-  AVAILABILITY_DELETION_SUCCESS_MESSAGE,
-} from "@/lib/helpers/messages-helpers";
+import { useTimeSlots } from "@/hooks/useTimeSlots";
+import { TimeSlotInput } from "./time-slot-input";
 
-interface TimeSlot {
-  start: string;
-  end: string;
-  isNew?: boolean;
-}
-
-interface WeeklySchedule {
-  [key: string]: TimeSlot[];
-}
-
-export default function AvailabilitiesTableRow({
-  dayKey: key,
-  dayLabel: label,
-  availabilities,
-}: {
+interface AvailabilitiesTableRowProps {
   dayKey: DayOfWeek;
   dayLabel: string;
   availabilities: AvailabilitiesWithRelation[];
-}) {
+}
+
+export default function AvailabilitiesTableRow({
+  dayKey,
+  dayLabel,
+  availabilities,
+}: AvailabilitiesTableRowProps) {
   const initialState: AvailabilityFormState = {
     message: null,
     errors: {},
@@ -54,59 +39,10 @@ export default function AvailabilitiesTableRow({
     initialState
   );
 
-  const [schedule, setSchedule] = useState<WeeklySchedule>({});
-
-  const addTimeSlot = (day: DayOfWeek) => {
-    setSchedule({
-      ...schedule,
-      [day]: [
-        ...(schedule[day] || []),
-        { start: "09:00", end: "17:00", isNew: true },
-      ],
-    });
-  };
-
-  const removeTimeSlot = (day: DayOfWeek, index: number) => {
-    const updatedSlots = schedule[day].filter((_, i) => i !== index);
-    setSchedule({ ...schedule, [day]: updatedSlots });
-  };
-
-  const updateTimeSlot = (
-    day: DayOfWeek,
-    index: number,
-    field: "start" | "end",
-    value: string
-  ) => {
-    const updatedSlots = [...schedule[day]];
-    updatedSlots[index][field] = value;
-    setSchedule({ ...schedule, [day]: updatedSlots });
-  };
-
-  const handleDeleteAvailability = async (
-    startTime: TimeSlot["start"],
-    endTime: TimeSlot["end"],
-    key: DayOfWeek
-  ) => {
-    const availabilityToDelete = availabilities.find(
-      (availability) =>
-        availability.dayOfWeek === key &&
-        availability.startTime === startTime &&
-        availability.endTime === endTime
-    );
-    try {
-      await deleteAvailability(availabilityToDelete!.id);
-      setSchedule((prevSchedule) => {
-        const updatedSlots = prevSchedule[key].filter(
-          (slot) => !(slot.start === startTime && slot.end === endTime)
-        );
-        return { ...prevSchedule, [key]: updatedSlots };
-      });
-      toast.success(AVAILABILITY_DELETION_SUCCESS_MESSAGE);
-    } catch (error) {
-      console.error("Error deleting availability:", error);
-      toast.error(AVAILABILITY_DELETION_ERROR_MESSAGE);
-    }
-  };
+  const { slots, addSlot, removeSlot, updateSlot, deleteSlot } = useTimeSlots(
+    dayKey,
+    availabilities
+  );
 
   useEffect(() => {
     if (state.message) {
@@ -117,113 +53,38 @@ export default function AvailabilitiesTableRow({
     }
   }, [state]);
 
-  useEffect(() => {
-    const dayAvailabilities = availabilities
-      .filter((availability) => availability.dayOfWeek === key)
-      .map((availability) => ({
-        start: availability.startTime,
-        end: availability.endTime,
-        isNew: false,
-      }));
-
-    if (dayAvailabilities.length > 0) {
-      setSchedule({ [key]: dayAvailabilities });
-    }
-  }, [availabilities, key]);
-
   return (
-    <TableRow key={key}>
+    <TableRow>
       <TableCell>
-        <div className="font-medium">{label}</div>
+        <div className="font-medium">{dayLabel}</div>
       </TableCell>
+
       <TableCell>
         <div className="space-y-2">
-          {schedule[key]?.map((slot, index) => (
+          {slots.map((slot, index) => (
             <form key={index} action={formAction}>
-              <Input type="hidden" name="dayOfWeek" value={key} />
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="time"
-                    name="startTime"
-                    value={slot.start}
-                    onChange={(e) =>
-                      updateTimeSlot(key, index, "start", e.target.value)
-                    }
-                    className="w-32"
-                  />
-                  <span className="text-muted-foreground">à</span>
-                  <Input
-                    type="time"
-                    name="endTime"
-                    value={slot.end}
-                    onChange={(e) =>
-                      updateTimeSlot(key, index, "end", e.target.value)
-                    }
-                    className="w-32"
-                  />
-                </div>
-
-                {slot.isNew ? (
-                  <>
-                    <Button
-                      type="submit"
-                      size="sm"
-                      variant="default"
-                      className="cursor-pointer"
-                      disabled={isPending}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => removeTimeSlot(key, index)}
-                      variant="ghost"
-                      size="icon"
-                      className="cursor-pointer"
-                      disabled={isPending}
-                    >
-                      <X className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      type="submit"
-                      size="sm"
-                      variant="default"
-                      className="cursor-pointer"
-                      disabled={isPending}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        handleDeleteAvailability(slot.start, slot.end, key)
-                      }
-                      className="cursor-pointer"
-                      disabled={isPending}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </>
-                )}
-              </div>
+              <TimeSlotInput
+                dayKey={dayKey}
+                slot={slot}
+                index={index}
+                isPending={isPending}
+                onUpdate={(field, value) => updateSlot(index, field, value)}
+                onRemove={() => removeSlot(index)}
+                onDelete={() => deleteSlot(index)}
+              />
             </form>
           ))}
-          {!schedule[key]?.length && (
+
+          {slots.length === 0 && (
             <div className="text-sm text-muted-foreground">Aucun créneau</div>
           )}
         </div>
       </TableCell>
+
       <TableCell className="text-right">
         <Button
           type="button"
-          onClick={() => addTimeSlot(key)}
+          onClick={addSlot}
           variant="outline"
           size="sm"
           className="cursor-pointer"

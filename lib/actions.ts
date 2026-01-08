@@ -503,7 +503,6 @@ export async function getAvailabilities() {
 }
 
 export async function deleteAvailability(availabilityId: string) {
-  console.log("🚀 ~ deleteAvailability ~ availabilityId:", availabilityId);
   const session = await getSession();
 
   if (!session?.user?.id) {
