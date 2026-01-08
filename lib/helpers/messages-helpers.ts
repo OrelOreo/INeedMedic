@@ -1,3 +1,5 @@
+export const EMAIL_OR_PASSWORD_INVALID_MESSAGE =
+  "Email ou mot de passe invalide.";
 export const REQUIRE_PASSWORD_MESSAGE = "Mot de passe requis.";
 export const PASSWORDS_DO_NOT_MATCH_MESSAGE =
   "Les mots de passe ne correspondent pas.";
