@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { AppointmentsTable } from "@/components/appointments/appointments-table";
-import { getAppointmentsCountByUser } from "@/lib/data";
+import { getAppointmentsCountByUser } from "@/lib/server-actions/index";
 import { AppointmentsTableSkeleton } from "@/components/ui/appointments-table-skeleton";
 
 export default async function AppointmentsPage() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { cancelAppointment } from "@/lib/actions";
+import { cancelAppointment } from "@/lib/server-actions/appointment";
 import { toast } from "sonner";
 import { useState } from "react";
 import { AppointmentWithRelations } from "@/types/appointment-with-relations";
