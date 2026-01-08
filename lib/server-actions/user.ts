@@ -185,7 +185,7 @@ export async function updateUserProfile(
   try {
     const emailExists = await isEmailExist(validatedFields.data.email);
 
-    if (emailExists) {
+    if (emailExists && validatedFields.data.email !== session.user.email) {
       return createEmailExistsErrorMessage(prevState.id);
     }
 
