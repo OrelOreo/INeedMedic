@@ -1,6 +1,6 @@
 "use client";
 
-import { FormInfosState, updateUserProfile } from "@/lib/server-actions/index";
+import { updateUserProfile } from "@/lib/server-actions/index";
 import { User, Mail, AlertCircleIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Alert, AlertTitle } from "../ui/alert";
 import { Prisma } from "@prisma/client";
 
 import SubmitButtons from "../shared/submit-buttons";
+import { FormInfosState } from "@/types/form-state/information-form-state";
 
 type UserProfileProps = Prisma.UserGetPayload<{
   select: {

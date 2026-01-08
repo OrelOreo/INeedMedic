@@ -5,20 +5,18 @@ import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { Alert, AlertTitle } from "../ui/alert";
 import { useActionState } from "react";
-import {
-  updateUserPassword,
-  FormPasswordState,
-} from "@/lib/server-actions/index";
+import { updateUserPassword } from "@/lib/server-actions/index";
 import { Lock, AlertCircle as AlertCircleIcon } from "lucide-react";
 import SubmitButtons from "../shared/submit-buttons";
+import { FormUpdatePasswordState } from "@/types/form-state/password-update-form-state";
 
 export default function EditPasswordsForm() {
-  const initialState: FormPasswordState = {
+  const initialState: FormUpdatePasswordState = {
     message: null,
     errors: {},
   };
   const updateUserProfileWithId = async (
-    prevState: FormPasswordState | undefined,
+    prevState: FormUpdatePasswordState | undefined,
     formData: FormData
   ) => {
     return updateUserPassword(prevState ?? initialState, formData);
