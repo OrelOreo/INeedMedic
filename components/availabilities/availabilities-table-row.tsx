@@ -40,10 +40,11 @@ export default function AvailabilitiesTableRow({
     return createAvailability(prevState ?? initialState, formData);
   };
 
-  const [state, formAction] = useActionState(
+  const [state, formAction, isPending] = useActionState(
     wrappedCreateAvailability,
     initialState
   );
+  console.log("🚀 ~ AvailabilitiesTableRow ~ isPending:", isPending);
 
   const [schedule, setSchedule] = useState<WeeklySchedule>({});
 
@@ -128,6 +129,7 @@ export default function AvailabilitiesTableRow({
                       size="sm"
                       variant="default"
                       className="cursor-pointer"
+                      disabled={isPending}
                     >
                       <Check className="h-4 w-4" />
                     </Button>
@@ -137,6 +139,7 @@ export default function AvailabilitiesTableRow({
                       variant="ghost"
                       size="icon"
                       className="cursor-pointer"
+                      disabled={isPending}
                     >
                       <X className="h-4 w-4 text-destructive" />
                     </Button>
@@ -148,6 +151,7 @@ export default function AvailabilitiesTableRow({
                       size="sm"
                       variant="default"
                       className="cursor-pointer"
+                      disabled={isPending}
                     >
                       <Check className="h-4 w-4" />
                     </Button>
@@ -156,6 +160,7 @@ export default function AvailabilitiesTableRow({
                       variant="ghost"
                       size="icon"
                       className="cursor-pointer"
+                      disabled={isPending}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -176,6 +181,7 @@ export default function AvailabilitiesTableRow({
           variant="outline"
           size="sm"
           className="cursor-pointer"
+          disabled={isPending}
         >
           <Plus className="h-4 w-4 mr-1" />
           Ajouter
