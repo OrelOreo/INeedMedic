@@ -1,4 +1,4 @@
-import Availabilities from "@/components/availabilities/availabilities";
+import Availabilities from "@/components/availabilities/availabilities-table";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

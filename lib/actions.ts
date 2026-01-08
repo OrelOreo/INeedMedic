@@ -471,6 +471,7 @@ export async function createAvailability(
         dayOfWeek,
       },
     });
+    revalidatePath("/dashboard/availability");
   } catch (error) {
     console.error("Error ", error);
     return {
@@ -480,4 +481,18 @@ export async function createAvailability(
       message: null,
     };
   }
+}
+
+export async function getAvailabilities() {
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+  const availabilities = await prisma.availability.findMany({
+    where: {
+      practitionerId: session?.user.practitionerId!,
+    },
+  });
+  return availabilities;
 }
