@@ -1,5 +1,5 @@
 import z from "zod";
-import { FormInfosState } from "@/lib/actions";
+import { FormInfosState } from "@/lib/server-actions/index";
 import {
   GENERIC_ERROR_MESSAGE,
   NON_AUTHORIZED_ACTION,
