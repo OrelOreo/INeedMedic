@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/table";
 import { DayOfWeek } from "@prisma/client";
 import AvailabilitiesTableRow from "./availabilities-table-row";
-import { getAvailabilities } from "@/lib/actions";
+import { getAvailabilities } from "@/lib/server-actions/index";
 
 const days: { key: DayOfWeek; label: string }[] = [
   { key: "MONDAY", label: "Lundi" },

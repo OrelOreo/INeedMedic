@@ -4,7 +4,10 @@ import { Plus } from "lucide-react";
 import { TableCell, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { DayOfWeek } from "@prisma/client";
-import { AvailabilityFormState, createAvailability } from "@/lib/actions";
+import {
+  AvailabilityFormState,
+  createAvailability,
+} from "@/lib/server-actions/index";
 import { useActionState, useEffect } from "react";
 import type { AvailabilitiesWithRelation } from "@/types/availabilities-with-relation";
 import { toast } from "sonner";

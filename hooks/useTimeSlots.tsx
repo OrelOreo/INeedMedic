@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DayOfWeek } from "@prisma/client";
 import type { AvailabilitiesWithRelation } from "@/types/availabilities-with-relation";
-import { deleteAvailability } from "@/lib/actions";
+import { deleteAvailability } from "@/lib/server-actions/index";
 import { toast } from "sonner";
 import {
   AVAILABILITY_DELETION_ERROR_MESSAGE,
