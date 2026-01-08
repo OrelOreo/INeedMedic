@@ -14,16 +14,7 @@ import {
 } from "../helpers/messages-helpers";
 import z from "zod";
 import { revalidatePath } from "next/cache";
-
-export type AvailabilityFormState = {
-  errors?: {
-    startTime?: string[];
-    endTime?: string[];
-    dayOfWeek?: string[];
-    globalErrors?: string[];
-  };
-  message?: string | null;
-};
+import { AvailabilityFormState } from "@/types/form-state/availabity-form-state";
 
 const availabilityFormSchema = z
   .object({

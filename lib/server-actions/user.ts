@@ -29,38 +29,9 @@ import {
   createValidationSuccessProfileMessage,
 } from "../helpers/form-state-helpers";
 import { revalidatePath } from "next/cache";
-
-export type FormPasswordState = {
-  errors?: {
-    currentPassword?: string[];
-    newPassword?: string[];
-    confirmPassword?: string[];
-    globalErrors?: string[];
-  };
-  message?: string | null;
-};
-
-export type RegisterFormState = {
-  errors?: {
-    name?: string[];
-    email?: string[];
-    password?: string[];
-    confirmPassword?: string[];
-    role?: string[];
-    globalErrors?: string[];
-  };
-  message?: string | null;
-};
-
-export type FormInfosState = {
-  id: string;
-  errors?: {
-    name?: string[];
-    email?: string[];
-    globalErrors?: string[];
-  };
-  message?: string | null;
-};
+import { RegisterFormState } from "@/types/form-state/register-form-state";
+import { FormInfosState } from "@/types/form-state/information-form-state";
+import { FormUpdatePasswordState } from "@/types/form-state/password-update-form-state";
 
 const registerFormSchema = z
   .object({
@@ -235,7 +206,7 @@ export async function updateUserProfile(
 }
 
 export async function updateUserPassword(
-  prevState: FormPasswordState,
+  prevState: FormUpdatePasswordState,
   formData: FormData
 ) {
   const session = await getSession();
