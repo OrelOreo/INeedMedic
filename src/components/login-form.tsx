@@ -77,7 +77,7 @@ export default function LoginForm() {
       if (result?.error) {
         setGlobalError(EMAIL_OR_PASSWORD_INVALID_MESSAGE);
       } else if (result?.ok) {
-        router.push("/dashboard");
+        // router.push("/");
         router.refresh();
       }
     } catch (error) {
