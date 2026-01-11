@@ -9,11 +9,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Heart, Menu } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { NavItem } from "@/types/nav";
 import { LogoutButton } from "./logout-button";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 type MobileMenuProps = {
   navItems: readonly NavItem[];
@@ -25,6 +26,14 @@ export default function MobileMenu({
   isAuthenticated,
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  useEffect(() => {
+    if (isDesktop) {
+      setIsOpen((prev) => !prev);
+    }
+  }, [isDesktop]);
+
   return (
     <div className="md:hidden flex items-center">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -38,8 +47,13 @@ export default function MobileMenu({
         <SheetContent side="right" className="w-75">
           <SheetHeader>
             <SheetTitle>
-              <Link href="/" onClick={() => setIsOpen(false)}>
-                INeedMedic
+              <Link href="/" className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center ml-4 md:ml-0">
+                  <Heart className="w-6 h-6 text-white" fill="white" />
+                </div>
+                <span className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  INeedMedic
+                </span>
               </Link>
             </SheetTitle>
             <SheetDescription></SheetDescription>
