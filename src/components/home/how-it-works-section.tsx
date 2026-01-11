@@ -3,7 +3,7 @@ import { HOW_IT_WORKS_STEPS } from "@/lib/home";
 export default function HowItWorks() {
   return (
     <section
-      id="comment-ca-marche"
+      id="how-it-works"
       className="py-20 bg-linear-to-br from-emerald-50 to-teal-50"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

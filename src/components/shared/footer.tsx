@@ -1,4 +1,5 @@
 import { Heart } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -21,86 +22,28 @@ export default function Footer() {
             <h4 className="font-bold text-white mb-4">Produit</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="#features"
                   className="hover:text-emerald-400 transition-colors"
                 >
                   Fonctionnalités
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="#find-doctor"
                   className="hover:text-emerald-400 transition-colors"
                 >
-                  Tarifs
-                </a>
+                  Trouver un médecin
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="#how-it-works"
                   className="hover:text-emerald-400 transition-colors"
                 >
-                  Sécurité
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-white mb-4">Entreprise</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  À propos
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  Carrières
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-white mb-4">Support</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  Centre d'aide
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  Mentions légales
-                </a>
+                  Comment ça marche ?
+                </Link>
               </li>
             </ul>
           </div>

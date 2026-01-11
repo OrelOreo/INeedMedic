@@ -5,7 +5,10 @@ import AppointmentPreview from "./appointment-preview";
 
 export function HeroSection() {
   return (
-    <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+    <section
+      id="find-doctor"
+      className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32"
+    >
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6 animate-fade-in">
           <div className="flex justify-center md:justify-start">
