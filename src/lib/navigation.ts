@@ -37,6 +37,6 @@ export function getNavigationItems(
   return NAV_ITEMS.client;
 }
 
-export function getHomeHref(isAuthenticated: boolean): string {
-  return isAuthenticated ? "/dashboard" : "/";
+export function getHomeRefByRole(userRole?: UserRole): string {
+  return userRole === "PRACTITIONER" ? "/dashboard" : "/";
 }
