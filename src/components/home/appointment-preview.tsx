@@ -28,7 +28,7 @@ export default function AppointmentPreview() {
                 (time, i) => (
                   <button
                     key={i}
-                    className={`p-3 rounded-xl font-medium transition-all ${
+                    className={`p-3 rounded-xl font-medium transition-all cursor-not-allowed ${
                       i === 2
                         ? "bg-linear-to-r from-emerald-500 to-teal-600 text-white shadow-lg"
                         : "bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600"
@@ -41,7 +41,7 @@ export default function AppointmentPreview() {
             </div>
           </div>
 
-          <Button className="w-full bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg py-6 text-lg">
+          <Button className="w-full cursor-not-allowed bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg py-6 text-lg">
             Confirmer le rendez-vous
           </Button>
         </div>

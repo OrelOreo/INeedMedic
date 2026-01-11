@@ -27,15 +27,7 @@ export function HeroSection() {
             Trouvez le bon praticien, consultez les disponibilités en temps réel
             et réservez votre consultation en toute simplicité.
           </p>
-          <div className="flex justify-center md:justify-start">
-            <Button
-              size="lg"
-              className="bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-xl shadow-emerald-200 group"
-            >
-              Trouver un médecin
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
+
           <SearchForm />
         </div>
         <AppointmentPreview />
