@@ -30,7 +30,7 @@ export default function MobileMenu({
 
   useEffect(() => {
     if (isDesktop) {
-      setIsOpen((prev) => !prev);
+      setIsOpen(false);
     }
   }, [isDesktop]);
 
