@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/home/hero-section";
 import FeatureSection from "@/components/home/feature-section";
 import HowItWorks from "@/components/home/how-it-works-section";
 import CtaSection from "@/components/home/cta-section";
+import Footer from "@/components/shared/footer";
 
 export default function HomePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomePage() {
       <HowItWorks />
 
       <CtaSection />
+      <Footer />
     </div>
   );
 }

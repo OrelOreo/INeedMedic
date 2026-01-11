@@ -38,7 +38,6 @@ export default async function RootLayout({
           <Header />
           {children}
           <Toaster position="bottom-right" />
-          <Footer />
         </AuthProvider>
       </body>
     </html>
