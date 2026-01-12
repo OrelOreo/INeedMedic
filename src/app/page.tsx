@@ -4,7 +4,7 @@ import HowItWorks from "@/components/home/how-it-works-section";
 import CtaSection from "@/components/home/cta-section";
 import Footer from "@/components/shared/footer";
 
-export default function HomePage() {
+export default async function HomePage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50">
       <HeroSection />

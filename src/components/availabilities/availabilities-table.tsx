@@ -5,19 +5,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DayOfWeek } from "@prisma/client";
+import { days } from "@/lib/utils";
 import AvailabilitiesTableRow from "./availabilities-table-row";
 import { getAvailabilities } from "@/lib/server-actions/index";
-
-const days: { key: DayOfWeek; label: string }[] = [
-  { key: "MONDAY", label: "Lundi" },
-  { key: "TUESDAY", label: "Mardi" },
-  { key: "WEDNESDAY", label: "Mercredi" },
-  { key: "THURSDAY", label: "Jeudi" },
-  { key: "FRIDAY", label: "Vendredi" },
-  { key: "SATURDAY", label: "Samedi" },
-  { key: "SUNDAY", label: "Dimanche" },
-];
 
 export default async function Availabilities() {
   const availabilities = await getAvailabilities();

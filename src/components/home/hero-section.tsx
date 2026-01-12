@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import SearchForm from "./search-form";
+import SearchForm from "../shared/search-form";
 import AppointmentPreview from "./appointment-preview";
 
 export function HeroSection() {

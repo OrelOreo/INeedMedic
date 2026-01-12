@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus, DayOfWeek } from "@prisma/client";
 import type { AppointmentWithRelations } from "@/types/appointment-with-relations";
 
 export function cn(...inputs: ClassValue[]) {
@@ -56,3 +56,13 @@ export function getStatusLabel(status: AppointmentStatus): string {
 
   return labels[status] || status;
 }
+
+export const days: { key: DayOfWeek; label: string }[] = [
+  { key: "MONDAY", label: "Lundi" },
+  { key: "TUESDAY", label: "Mardi" },
+  { key: "WEDNESDAY", label: "Mercredi" },
+  { key: "THURSDAY", label: "Jeudi" },
+  { key: "FRIDAY", label: "Vendredi" },
+  { key: "SATURDAY", label: "Samedi" },
+  { key: "SUNDAY", label: "Dimanche" },
+];
