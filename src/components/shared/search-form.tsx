@@ -10,32 +10,17 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { SPECIALTIES } from "@/lib/home";
 
-const COMMUNES = [
-  "Paris",
-  "Lyon",
-  "Marseille",
-  "Toulouse",
-  "Nice",
-  "Nantes",
-  "Montpellier",
-  "Strasbourg",
-  "Bordeaux",
-  "Lille",
-  "Rennes",
-  "Reims",
-  "Saint-Étienne",
-  "Toulon",
-  "Le Havre",
-  "Grenoble",
-  "Dijon",
-  "Angers",
-  "Nîmes",
-  "Villeurbanne",
-];
+interface Commune {
+  nom: string;
+  code: string;
+  codeDepartement: string;
+  codesPostaux: string[];
+  population: number;
+}
 
 export default function SearchForm() {
   const router = useRouter();
@@ -44,15 +29,39 @@ export default function SearchForm() {
     specialty: "",
   });
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [communes, setCommunes] = useState<Commune[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredCommunes = formData.location
-    ? COMMUNES.filter((commune) =>
-        commune.toLowerCase().includes(formData.location.toLowerCase())
-      )
-    : [];
+  // Debounce effect
+  useEffect(() => {
+    if (!formData.location || formData.location.length < 2) {
+      setCommunes([]);
+      return;
+    }
 
-  const handleCitySelect = (commune: string) => {
-    setFormData({ ...formData, location: commune });
+    const timeoutId = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(
+            formData.location
+          )}&limit=10`
+        );
+        const data: Commune[] = await response.json();
+        setCommunes([...communes, ...data]);
+      } catch (error) {
+        console.error("Erreur lors de la recherche de communes:", error);
+        setCommunes([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // Debounce de 300ms
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.location]);
+
+  const handleCitySelect = (commune: Commune) => {
+    setFormData({ ...formData, location: commune.nom });
     setShowSuggestions(false);
   };
 
@@ -84,17 +93,24 @@ export default function SearchForm() {
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             className="pl-10 h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full"
           />
-          {showSuggestions && filteredCommunes.length > 0 && (
+          {showSuggestions && (communes.length > 0 || isLoading) && (
             <div className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
-              {filteredCommunes.map((commune) => (
-                <div
-                  key={commune}
-                  onClick={() => handleCitySelect(commune)}
-                  className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
-                >
-                  {commune}
-                </div>
-              ))}
+              {isLoading ? (
+                <div className="px-4 py-2 text-gray-500">Recherche...</div>
+              ) : (
+                communes.map((commune) => (
+                  <div
+                    key={commune.code}
+                    onClick={() => handleCitySelect(commune)}
+                    className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
+                  >
+                    <div className="font-medium">{commune.nom}</div>
+                    <div className="text-xs text-gray-500">
+                      {commune.codesPostaux[0]} - Dép. {commune.codeDepartement}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
         </div>
@@ -118,6 +134,7 @@ export default function SearchForm() {
             </SelectContent>
           </Select>
         </div>
+
         <Button
           type="submit"
           className="w-full cursor-pointer h-12 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg text-base font-semibold group"

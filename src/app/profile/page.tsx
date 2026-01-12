@@ -12,7 +12,7 @@ import { Shield } from "lucide-react";
 import { getSession } from "@/lib/helpers/auth-helpers";
 import { getCurrentUser } from "@/lib/data";
 import { redirect } from "next/navigation";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getUserNameInitials } from "@/lib/utils";
 import EditProfileForm from "@/components/profile/edit-informations-form";
 import EditPasswordsForm from "@/components/profile/edit-passwords-form";
 import { Metadata } from "next";
@@ -28,15 +28,6 @@ export default async function ProfilePage() {
   if (!user) {
     redirect("/login");
   }
-
-  const getUserNameInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   return (
     <main className="container mx-auto py-8 px-4 max-w-6xl">

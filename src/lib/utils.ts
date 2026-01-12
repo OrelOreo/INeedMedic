@@ -57,6 +57,15 @@ export function getStatusLabel(status: AppointmentStatus): string {
   return labels[status] || status;
 }
 
+export const getUserNameInitials = (name: string) => {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
 export const days: { key: DayOfWeek; label: string }[] = [
   { key: "MONDAY", label: "Lundi" },
   { key: "TUESDAY", label: "Mardi" },

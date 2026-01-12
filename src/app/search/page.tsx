@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { days } from "@/lib/utils";
-
+import { days, getUserNameInitials } from "@/lib/utils";
+import SearchForm from "@/components/shared/search-form";
 import { searchPractionnersByLocationAndSpeciality } from "@/lib/server-actions/index";
 
 export default async function SearchPage(props: {
@@ -19,19 +19,12 @@ export default async function SearchPage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
+  console.log("🚀 ~ SearchPage ~ searchParams:", searchParams);
 
   const practitioners = await searchPractionnersByLocationAndSpeciality(
     searchParams?.city || "",
     searchParams?.specialty || ""
   );
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
 
   return (
     <main className="container mx-auto py-8 px-4 max-w-6xl">
@@ -44,8 +37,9 @@ export default async function SearchPage(props: {
           disponible{practitioners.length > 1 ? "s" : ""}
         </p>
       </div>
+      <SearchForm />
 
-      <div className="grid gap-6">
+      <div className="grid gap-6 mt-6">
         {practitioners.map((practitioner) => (
           <Card key={practitioner.id} className="border border-emerald-100 ">
             <CardHeader>
@@ -54,7 +48,7 @@ export default async function SearchPage(props: {
                   <Avatar className="w-16 h-16 border-2 border-emerald-200">
                     <AvatarImage src={practitioner.user.image || undefined} />
                     <AvatarFallback className="bg-linear-to-br from-emerald-500 to-teal-600 text-white text-lg font-semibold">
-                      {getInitials(practitioner.user.name)}
+                      {getUserNameInitials(practitioner.user.name)}
                     </AvatarFallback>
                   </Avatar>
 
