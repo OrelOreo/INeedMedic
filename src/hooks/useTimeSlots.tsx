@@ -37,7 +37,7 @@ export function useTimeSlots(
   const addSlot = () => {
     setSlots((prev) => [
       ...prev,
-      { start: "09:00", end: "17:00", isNew: true },
+      { start: "09:00", end: "09:30", isNew: true },
     ]);
   };
 
