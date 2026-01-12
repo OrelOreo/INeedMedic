@@ -95,72 +95,6 @@ export default function RegisterForm() {
                   </p>
                 ))}
             </div>
-            {selectRole === "PRACTITIONER" && (
-              <div className="space-y-2">
-                <div className="flex gap-x-1 items-center">
-                  <Stethoscope className="h-4 w-4 text-muted-foreground" />
-                  <Label htmlFor="specialty">
-                    Specialité<span className="text-red-500">*</span>
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Select aria-describedby="specialty-error" name="specialty">
-                    <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full">
-                      <SelectValue placeholder="Type de médecin" />
-                    </SelectTrigger>
-                    <SelectContent className="w-full">
-                      {SPECIALTIES.map((spec) => (
-                        <SelectItem key={spec.value} value={spec.value}>
-                          {spec.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {state.errors?.specialty &&
-                  state.errors.specialty.map((error: string) => (
-                    <p
-                      id="specialty-error"
-                      aria-live="polite"
-                      aria-atomic="true"
-                      className="mt-2 text-sm text-red-500"
-                      key={error}
-                    >
-                      {error}
-                    </p>
-                  ))}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <div className="flex gap-x-1 items-center">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="name">
-                  Nom complet<span className="text-red-500">*</span>
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="Jean Dupont"
-                  aria-describedby="name-error"
-                />
-              </div>
-              {state.errors?.name &&
-                state.errors.name.map((error: string) => (
-                  <p
-                    id="name-error"
-                    aria-live="polite"
-                    aria-atomic="true"
-                    className="mt-2 text-sm text-red-500"
-                    key={error}
-                  >
-                    {error}
-                  </p>
-                ))}
-            </div>
 
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
@@ -192,56 +126,152 @@ export default function RegisterForm() {
                 ))}
             </div>
 
-            {/* <div className="space-y-2">
-              <div className="flex gap-x-1 items-center">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="phone">
-                  Téléphone<span className="text-red-500">*</span>
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="0123456789"
-                  aria-describedby="phone-error"
-                />
-              </div>
-              {state.errors?.phone &&
-                state.errors.phone.map((error: string) => (
-                  <p
-                    id="phone-error"
-                    aria-live="polite"
-                    aria-atomic="true"
-                    className="mt-2 text-sm text-red-500"
-                    key={error}
-                  >
-                    {error}
-                  </p>
-                ))}
-            </div> */}
+            {selectRole === "PRACTITIONER" && (
+              <>
+                <div className="space-y-2">
+                  <div className="flex gap-x-1 items-center">
+                    <Stethoscope className="h-4 w-4 text-muted-foreground" />
+                    <Label htmlFor="specialty">
+                      Specialité<span className="text-red-500">*</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Select aria-describedby="specialty-error" name="specialty">
+                      <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full">
+                        <SelectValue placeholder="Type de médecin" />
+                      </SelectTrigger>
+                      <SelectContent className="w-full">
+                        {SPECIALTIES.map((spec) => (
+                          <SelectItem key={spec.value} value={spec.value}>
+                            {spec.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {state.errors?.specialty &&
+                    state.errors.specialty.map((error: string) => (
+                      <p
+                        id="specialty-error"
+                        aria-live="polite"
+                        aria-atomic="true"
+                        className="mt-2 text-sm text-red-500"
+                        key={error}
+                      >
+                        {error}
+                      </p>
+                    ))}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex gap-x-1 items-center">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <Label htmlFor="phone">
+                      Téléphone<span className="text-red-500">*</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="0123456789"
+                      aria-describedby="phone-error"
+                    />
+                  </div>
+                  {state.errors?.phone &&
+                    state.errors.phone.map((error: string) => (
+                      <p
+                        id="phone-error"
+                        aria-live="polite"
+                        aria-atomic="true"
+                        className="mt-2 text-sm text-red-500"
+                        key={error}
+                      >
+                        {error}
+                      </p>
+                    ))}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex gap-x-1 items-center">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <Label htmlFor="address">
+                      Adresse<span className="text-red-500">*</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="address"
+                      name="address"
+                      type="text"
+                      placeholder="123 Rue Exemple"
+                      aria-describedby="address-error"
+                    />
+                  </div>
+                  {state.errors?.address &&
+                    state.errors.address.map((error: string) => (
+                      <p
+                        id="address-error"
+                        aria-live="polite"
+                        aria-atomic="true"
+                        className="mt-2 text-sm text-red-500"
+                        key={error}
+                      >
+                        {error}
+                      </p>
+                    ))}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex gap-x-1 items-center">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <Label htmlFor="city">
+                      Commune<span className="text-red-500">*</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="city"
+                      name="city"
+                      type="text"
+                      placeholder="Paris, Lyon, Marseille..."
+                      aria-describedby="city-error"
+                    />
+                  </div>
+                  {state.errors?.city &&
+                    state.errors.city.map((error: string) => (
+                      <p
+                        id="city-error"
+                        aria-live="polite"
+                        aria-atomic="true"
+                        className="mt-2 text-sm text-red-500"
+                        key={error}
+                      >
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </>
+            )}
 
-            {/* <div className="space-y-2">
+            <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="address">
-                  Adresse<span className="text-red-500">*</span>
+                <User className="h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="name">
+                  Nom complet<span className="text-red-500">*</span>
                 </Label>
               </div>
               <div className="flex items-center gap-2">
                 <Input
-                  id="address"
-                  name="address"
+                  id="name"
+                  name="name"
                   type="text"
-                  placeholder="123 Rue Exemple"
-                  aria-describedby="address-error"
+                  placeholder="Jean Dupont"
+                  aria-describedby="name-error"
                 />
               </div>
-              {state.errors?.address &&
-                state.errors.address.map((error: string) => (
+              {state.errors?.name &&
+                state.errors.name.map((error: string) => (
                   <p
-                    id="address-error"
+                    id="name-error"
                     aria-live="polite"
                     aria-atomic="true"
                     className="mt-2 text-sm text-red-500"
@@ -250,7 +280,7 @@ export default function RegisterForm() {
                     {error}
                   </p>
                 ))}
-            </div> */}
+            </div>
 
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">

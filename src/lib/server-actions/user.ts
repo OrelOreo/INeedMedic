@@ -16,6 +16,10 @@ import {
   REQUIRE_PASSWORD_MESSAGE,
   ROLE_REQUIRED_MESSAGE,
   SESSION_NOT_FOUND_MESSAGE,
+  SPECIALTY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
+  PHONE_REQUIRED_FOR_PRACTITIONER_MESSAGE,
+  ADDRESS_REQUIRED_FOR_PRACTITIONER_MESSAGE,
+  CITY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
 } from "../helpers/messages-helpers";
 import { prisma } from "@/db/prisma";
 import bcrypt from "bcryptjs";
@@ -42,6 +46,21 @@ const registerFormSchema = z
     role: z.enum(["CLIENT", "PRACTITIONER"], {
       message: ROLE_REQUIRED_MESSAGE,
     }),
+    phone: z
+      .string()
+      .optional()
+      .transform((val) => val?.replace(/[\s.-]/g, ""))
+      .pipe(
+        z
+          .string()
+          .regex(
+            /^(?:(?:\+|00)33|0)[1-9](?:[0-9]{2}){4}$/,
+            "Le numéro de téléphone doit être un numéro français valide"
+          )
+          .optional()
+      ),
+    address: z.string().optional(),
+    city: z.string().optional(),
     specialty: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -56,11 +75,46 @@ const registerFormSchema = z
       return true;
     },
     {
-      message: "La spécialité est requise pour les praticiens",
+      message: SPECIALTY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
       path: ["specialty"],
     }
+  )
+  .refine(
+    (data) => {
+      if (data.role === "PRACTITIONER") {
+        return data.phone && data.phone.length > 0;
+      }
+      return true;
+    },
+    {
+      message: PHONE_REQUIRED_FOR_PRACTITIONER_MESSAGE,
+      path: ["phone"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.role === "PRACTITIONER") {
+        return data.address && data.address.length > 0;
+      }
+      return true;
+    },
+    {
+      message: ADDRESS_REQUIRED_FOR_PRACTITIONER_MESSAGE,
+      path: ["address"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.role === "PRACTITIONER") {
+        return data.city && data.city.length > 0;
+      }
+      return true;
+    },
+    {
+      message: CITY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
+      path: ["city"],
+    }
   );
-
 const userProfileFormSchema = z.object({
   name: z
     .string()
@@ -115,6 +169,10 @@ export async function registerUser(
   formData: FormData
 ): Promise<RegisterFormState> {
   const specialtyValue = formData.get("specialty");
+  const phoneValue = formData.get("phone");
+  const addressValue = formData.get("address");
+  const cityValue = formData.get("city");
+
   const validatedFields = registerFormSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -123,6 +181,9 @@ export async function registerUser(
     role: formData.get("role"),
     specialty:
       specialtyValue && specialtyValue !== "" ? specialtyValue : undefined,
+    phone: phoneValue && phoneValue !== "" ? phoneValue : undefined,
+    address: addressValue && addressValue !== "" ? addressValue : undefined,
+    city: cityValue && cityValue !== "" ? cityValue : undefined,
   });
 
   if (!validatedFields.success) {
@@ -135,11 +196,15 @@ export async function registerUser(
         confirmPassword: errorTree.properties?.confirmPassword?.errors,
         role: errorTree.properties?.role?.errors,
         specialty: errorTree.properties?.specialty?.errors,
+        phone: errorTree.properties?.phone?.errors,
+        address: errorTree.properties?.address?.errors,
+        city: errorTree.properties?.city?.errors,
       },
       message: null,
     };
   }
-  const { name, email, password, role, specialty } = validatedFields.data;
+  const { name, email, password, role, specialty, phone, address, city } =
+    validatedFields.data;
   try {
     const existingUser = await isEmailExist(email);
     if (existingUser) {
@@ -164,6 +229,9 @@ export async function registerUser(
         data: {
           userId: user.id,
           specialty,
+          phone,
+          address,
+          city,
         },
       });
     }

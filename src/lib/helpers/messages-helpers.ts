@@ -49,3 +49,11 @@ export const AVAILABILITY_DELETION_SUCCESS_MESSAGE =
   "Disponibilité supprimée avec succès.";
 export const AVAILABILITY_DELETION_ERROR_MESSAGE =
   "Échec de la suppression de la disponibilité.";
+export const SPECIALTY_REQUIRED_FOR_PRACTITIONER_MESSAGE =
+  "La spécialité est requise pour les praticiens.";
+export const PHONE_REQUIRED_FOR_PRACTITIONER_MESSAGE =
+  "Le numéro de téléphone est requis pour les praticiens.";
+export const ADDRESS_REQUIRED_FOR_PRACTITIONER_MESSAGE =
+  "L'adresse est requise pour les praticiens.";
+export const CITY_REQUIRED_FOR_PRACTITIONER_MESSAGE =
+  "La ville est requise pour les praticiens.";
