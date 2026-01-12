@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -10,8 +10,10 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { toast } from "sonner";
+
 import { PractionnersWithRelation } from "@/types/practionners-with-relation";
-import { Availability, DayOfWeek } from "@prisma/client";
+import { DayOfWeek } from "@prisma/client";
 import { createAppointment } from "@/lib/server-actions";
 
 type AppointmentFormProps = {
@@ -33,23 +35,31 @@ export default function AppointmentForm({
     selectedAppointment.availability
   );
   const [clientNotes, setClientNotes] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmitAppointment = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-      await createAppointment(
+      const response = await createAppointment(
         selectedAppointment.practitioner.id,
+        new Date().toISOString(),
         selectedAppointment.availability.startTime,
         selectedAppointment.availability.endTime,
         clientNotes
       );
-      // Handle success (e.g., show a success message, refresh data, etc.)
-      // onClose();
+      if (response.statut === "success") {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
     } catch (error) {
-      console.log("🚀 ~ handleSubmitAppointment ~ error:", error);
+      toast.error("Une erreur est survenue");
+    } finally {
+      setClientNotes("");
+      onClose();
+      setIsSubmitting(false);
     }
-    // setClientNotes("");
-    // onClose();
   };
 
   const handleCancel = () => {
@@ -91,6 +101,7 @@ export default function AppointmentForm({
             </div>
             <div className="flex justify-end gap-2">
               <Button
+                disabled={isSubmitting}
                 type="button"
                 variant="outline"
                 className="cursor-pointer"
@@ -99,6 +110,7 @@ export default function AppointmentForm({
                 Annuler
               </Button>
               <Button
+                disabled={isSubmitting}
                 type="submit"
                 className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
               >

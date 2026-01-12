@@ -109,6 +109,7 @@ export async function cancelAppointment(appointment: AppointmentWithRelations) {
 
 export async function createAppointment(
   practitionerId: string,
+  appointmentDate: string,
   startTime: string,
   endTime: string,
   clientNotes?: string
@@ -119,21 +120,18 @@ export async function createAppointment(
     return { statut: "error", message: NON_AUTHORIZED_ACTION };
   }
 
-  // const startDateTime = new Date(startTime);
-  // const endDateTime = new Date(endTime);
+  const dateOnly = appointmentDate.split("T")[0];
 
-  console.log("🚀 ~ createAppointment ~ clientNotes:", clientNotes);
-  console.log("🚀 ~ createAppointment ~ startDateTime:", startTime);
-  console.log("🚀 ~ createAppointment ~ endDateTime:", endTime);
-  console.log("🚀 ~ createAppointment ~ practitionerId:", practitionerId);
+  const startDateTime = new Date(`${dateOnly}T${startTime}:00`);
+  const endDateTime = new Date(`${dateOnly}T${endTime}:00`);
 
   try {
     await prisma.appointment.create({
       data: {
         practitionerId,
         clientId: session.user.id,
-        startDateTime: startTime,
-        endDateTime: endTime,
+        startDateTime,
+        endDateTime,
         clientNotes,
       },
     });

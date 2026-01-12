@@ -99,11 +99,8 @@ model Availability {
   practitionerId String
   
   dayOfWeek     DayOfWeek
-  startTime     String     // Format: "09:00"
-  endTime       String     // Format: "17:00"
-  
-  // Permet de définir plusieurs plages horaires par jour
-  // ex: 9h-12h et 14h-18h = 2 availabilities pour le même jour
+  startTime     String     // Format: "12/01/2026 09:00"
+  endTime       String     
   
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt

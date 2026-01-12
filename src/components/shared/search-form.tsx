@@ -52,7 +52,6 @@ export default function SearchForm() {
           )}&limit=10`
         );
         const data: Commune[] = await response.json();
-        console.log("🚀 ~ SearchForm ~ data:", data);
         setCommunes([...communes, ...data]);
       } catch (error) {
         console.error("Erreur lors de la recherche de communes:", error);
