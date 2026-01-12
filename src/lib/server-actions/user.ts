@@ -42,11 +42,24 @@ const registerFormSchema = z
     role: z.enum(["CLIENT", "PRACTITIONER"], {
       message: ROLE_REQUIRED_MESSAGE,
     }),
+    specialty: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
     path: ["confirmPassword"],
-  });
+  })
+  .refine(
+    (data) => {
+      if (data.role === "PRACTITIONER") {
+        return data.specialty && data.specialty.length > 0;
+      }
+      return true;
+    },
+    {
+      message: "La spécialité est requise pour les praticiens",
+      path: ["specialty"],
+    }
+  );
 
 const userProfileFormSchema = z.object({
   name: z
@@ -100,13 +113,16 @@ async function isPasswordValid(userId: string, password: string) {
 export async function registerUser(
   prevState: RegisterFormState,
   formData: FormData
-) {
+): Promise<RegisterFormState> {
+  const specialtyValue = formData.get("specialty");
   const validatedFields = registerFormSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
     role: formData.get("role"),
+    specialty:
+      specialtyValue && specialtyValue !== "" ? specialtyValue : undefined,
   });
 
   if (!validatedFields.success) {
@@ -118,11 +134,12 @@ export async function registerUser(
         password: errorTree.properties?.password?.errors,
         confirmPassword: errorTree.properties?.confirmPassword?.errors,
         role: errorTree.properties?.role?.errors,
+        specialty: errorTree.properties?.specialty?.errors,
       },
       message: null,
     };
   }
-  const { name, email, password, role } = validatedFields.data;
+  const { name, email, password, role, specialty } = validatedFields.data;
   try {
     const existingUser = await isEmailExist(email);
     if (existingUser) {
@@ -134,7 +151,7 @@ export async function registerUser(
       };
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -142,6 +159,14 @@ export async function registerUser(
         role,
       },
     });
+    if (role === "PRACTITIONER" && specialty) {
+      await prisma.practitioner.create({
+        data: {
+          userId: user.id,
+          specialty,
+        },
+      });
+    }
     return {
       errors: {},
       message: REGISTRATION_SUCCESS_MESSAGE,

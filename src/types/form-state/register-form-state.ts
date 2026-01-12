@@ -5,6 +5,7 @@ export type RegisterFormState = {
     password?: string[];
     confirmPassword?: string[];
     role?: string[];
+    specialty?: string[];
     globalErrors?: string[];
   };
   message?: string | null;

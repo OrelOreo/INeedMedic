@@ -19,10 +19,21 @@ import {
 } from "./ui/select";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { registerUser } from "@/lib/server-actions/index";
-import { User, Mail, Lock, UserCircle, AlertCircle } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  UserCircle,
+  AlertCircle,
+  Stethoscope,
+  Phone,
+  MapPin,
+} from "lucide-react";
 import { RegisterFormState } from "@/types/form-state/register-form-state";
+import { Role } from "@prisma/client";
+import { SPECIALTIES } from "@/lib/home";
 
 export default function RegisterForm() {
   const initialState: RegisterFormState = {
@@ -31,6 +42,7 @@ export default function RegisterForm() {
   };
 
   const [state, formAction] = useActionState(registerUser, initialState);
+  const [selectRole, setSelectedRole] = useState<Role>("CLIENT");
 
   return (
     <Card className="w-4/5 md:w-full max-w-sm mt-12">
@@ -49,7 +61,10 @@ export default function RegisterForm() {
                 </Label>
               </div>
               <div className="flex items-center gap-2">
-                <Select name="role">
+                <Select
+                  name="role"
+                  onValueChange={(value) => setSelectedRole(value as Role)}
+                >
                   <SelectTrigger id="role" className="w-full">
                     <SelectValue placeholder="Sélectionnez un type de compte" />
                   </SelectTrigger>
@@ -80,6 +95,42 @@ export default function RegisterForm() {
                   </p>
                 ))}
             </div>
+            {selectRole === "PRACTITIONER" && (
+              <div className="space-y-2">
+                <div className="flex gap-x-1 items-center">
+                  <Stethoscope className="h-4 w-4 text-muted-foreground" />
+                  <Label htmlFor="specialty">
+                    Specialité<span className="text-red-500">*</span>
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select aria-describedby="specialty-error" name="specialty">
+                    <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full">
+                      <SelectValue placeholder="Type de médecin" />
+                    </SelectTrigger>
+                    <SelectContent className="w-full">
+                      {SPECIALTIES.map((spec) => (
+                        <SelectItem key={spec.value} value={spec.value}>
+                          {spec.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {state.errors?.specialty &&
+                  state.errors.specialty.map((error: string) => (
+                    <p
+                      id="specialty-error"
+                      aria-live="polite"
+                      aria-atomic="true"
+                      className="mt-2 text-sm text-red-500"
+                      key={error}
+                    >
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            )}
 
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
@@ -140,6 +191,66 @@ export default function RegisterForm() {
                   </p>
                 ))}
             </div>
+
+            {/* <div className="space-y-2">
+              <div className="flex gap-x-1 items-center">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="phone">
+                  Téléphone<span className="text-red-500">*</span>
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="0123456789"
+                  aria-describedby="phone-error"
+                />
+              </div>
+              {state.errors?.phone &&
+                state.errors.phone.map((error: string) => (
+                  <p
+                    id="phone-error"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="mt-2 text-sm text-red-500"
+                    key={error}
+                  >
+                    {error}
+                  </p>
+                ))}
+            </div> */}
+
+            {/* <div className="space-y-2">
+              <div className="flex gap-x-1 items-center">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="address">
+                  Adresse<span className="text-red-500">*</span>
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="address"
+                  name="address"
+                  type="text"
+                  placeholder="123 Rue Exemple"
+                  aria-describedby="address-error"
+                />
+              </div>
+              {state.errors?.address &&
+                state.errors.address.map((error: string) => (
+                  <p
+                    id="address-error"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="mt-2 text-sm text-red-500"
+                    key={error}
+                  >
+                    {error}
+                  </p>
+                ))}
+            </div> */}
 
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
