@@ -30,10 +30,10 @@ export default function AppointmentForm({
   days,
   onClose,
 }: AppointmentFormProps) {
-  console.log(
-    "🚀 ~ AppointmentForm ~ selectedAppointment.availability:",
-    selectedAppointment.availability
-  );
+  // console.log(
+  //   "🚀 ~ AppointmentForm ~ selectedAppointment.availability:",
+  //   selectedAppointment.availability
+  // );
   const [clientNotes, setClientNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,7 +43,7 @@ export default function AppointmentForm({
     try {
       const response = await createAppointment(
         selectedAppointment.practitioner.id,
-        new Date().toISOString(),
+        selectedAppointment.availability.date.toISOString(),
         selectedAppointment.availability.startTime,
         selectedAppointment.availability.endTime,
         clientNotes

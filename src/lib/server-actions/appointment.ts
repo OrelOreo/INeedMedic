@@ -51,7 +51,7 @@ export async function getAppointmentsByUser() {
       },
     },
     orderBy: {
-      startDateTime: "asc",
+      date: "asc",
     },
   });
 
@@ -120,18 +120,14 @@ export async function createAppointment(
     return { statut: "error", message: NON_AUTHORIZED_ACTION };
   }
 
-  const dateOnly = appointmentDate.split("T")[0];
-
-  const startDateTime = new Date(`${dateOnly}T${startTime}:00`);
-  const endDateTime = new Date(`${dateOnly}T${endTime}:00`);
-
   try {
     await prisma.appointment.create({
       data: {
         practitionerId,
         clientId: session.user.id,
-        startDateTime,
-        endDateTime,
+        date: appointmentDate,
+        startTime,
+        endTime,
         clientNotes,
       },
     });

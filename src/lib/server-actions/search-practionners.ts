@@ -34,6 +34,13 @@ export async function searchPractionnersByLocationAndSpeciality(
     include: {
       user: true,
       availabilities: true,
+      appointments: {
+        select: {
+          date: true,
+          startTime: true,
+          endTime: true,
+        },
+      },
     },
   });
 

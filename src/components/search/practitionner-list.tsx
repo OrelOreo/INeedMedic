@@ -18,43 +18,20 @@ type PractitionerListProps = {
   practitioners: PractionnersWithRelation[];
 };
 
-// Helper function to calculate maximum slots across all days
-const getMaxSlotsForPractitioner = (
-  practitioner: PractionnersWithRelation
-): number => {
-  return Math.max(
-    ...days.map(
-      (day) =>
-        practitioner.availabilities.filter((av) => av.dayOfWeek === day.key)
-          .length
-    ),
-    1
-  );
-};
-
-// Helper function to get availabilities for a specific day
-const getAvailabilitiesForDay = (
-  practitioner: PractionnersWithRelation,
-  dayKey: string
-) => {
-  return practitioner.availabilities.filter((av) => av.dayOfWeek === dayKey);
-};
-
-// Helper function to render empty slots
-const renderEmptySlots = (count: number, dayKey: string) => {
-  return Array.from({ length: count }, (_, index) => (
-    <div
-      key={`empty-${dayKey}-${index}`}
-      className="h-8 flex items-center justify-center text-gray-400 text-sm"
-    >
-      -
-    </div>
-  ));
-};
+// Helper to get day label from a date string (YYYY-MM-DD)
+function getDayLabelFromDate(dateInput: string | Date) {
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+  return date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+  });
+}
 
 export default function PractitionerList({
   practitioners,
 }: PractitionerListProps) {
+  console.log("🚀 ~ PractitionerList ~ practitioners:", practitioners);
   const [selectedAppointment, setSelectedAppointment] = useState<{
     practitioner: PractionnersWithRelation;
     availability: PractionnersWithRelation["availabilities"][0];
@@ -63,8 +40,6 @@ export default function PractitionerList({
   return (
     <div className="grid gap-6 mt-6">
       {practitioners.map((practitioner) => {
-        const maxSlots = getMaxSlotsForPractitioner(practitioner);
-
         return (
           <Card key={practitioner.id} className="border border-emerald-100 ">
             <CardHeader>
@@ -115,39 +90,47 @@ export default function PractitionerList({
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">Disponibilités</span>
                     </div>
-                    <div className="grid grid-cols-7 gap-2">
-                      {days.map((day) => {
-                        const availabilities = getAvailabilitiesForDay(
-                          practitioner,
-                          day.key
-                        );
-
-                        return (
-                          <div key={day.key} className="flex flex-col gap-1">
-                            <p className="font-semibold text-center text-gray-700 mb-1">
-                              {day.label}
-                            </p>
-                            {availabilities.length > 0
-                              ? availabilities.map((availability) => (
-                                  <Button
-                                    key={availability.id}
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 px-1 cursor-pointer"
-                                    onClick={() =>
-                                      setSelectedAppointment({
-                                        practitioner,
-                                        availability,
-                                      })
-                                    }
-                                  >
-                                    {availability.startTime}
-                                  </Button>
-                                ))
-                              : renderEmptySlots(maxSlots, day.key)}
+                    <div className="flex flex-wrap gap-2">
+                      {practitioner.availabilities.length === 0 && (
+                        <span className="text-gray-400 text-sm">
+                          Aucune disponibilité
+                        </span>
+                      )}
+                      {practitioner.availabilities
+                        .filter(
+                          (availability) =>
+                            !practitioner.appointments?.some(
+                              (appointment) =>
+                                new Date(appointment.date).toISOString() ===
+                                  new Date(availability.date).toISOString() &&
+                                appointment.startTime ===
+                                  availability.startTime &&
+                                appointment.endTime === availability.endTime
+                            )
+                        )
+                        .map((availability) => (
+                          <div
+                            key={availability.id}
+                            className="flex flex-col items-center"
+                          >
+                            <span className="font-semibold text-xs text-gray-700 mb-1">
+                              {getDayLabelFromDate(availability.date)}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-2 cursor-pointer"
+                              onClick={() =>
+                                setSelectedAppointment({
+                                  practitioner,
+                                  availability,
+                                })
+                              }
+                            >
+                              {availability.startTime}
+                            </Button>
                           </div>
-                        );
-                      })}
+                        ))}
                     </div>
                   </div>
                 </div>

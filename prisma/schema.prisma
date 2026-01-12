@@ -151,8 +151,9 @@ model Appointment {
   practitionerId  String
   
   // Détails du rendez-vous
-  startDateTime   DateTime
-  endDateTime     DateTime
+  date            DateTime
+  startTime       String
+  endTime         String
   status          AppointmentStatus @default(PENDING)
   
   // Notes
@@ -177,7 +178,6 @@ model Appointment {
 
   @@index([clientId])
   @@index([practitionerId])
-  @@index([startDateTime])
   @@index([status])
   @@map("appointments")
 }
