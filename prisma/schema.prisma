@@ -98,9 +98,10 @@ model Availability {
   id            String     @id @default(cuid())
   practitionerId String
   
+  date          DateTime   
   dayOfWeek     DayOfWeek
-  startTime     String     // Format: "12/01/2026 09:00"
-  endTime       String     
+  startTime     String     // Format: "09:00"
+  endTime       String     // Format: "09:30"
   
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt

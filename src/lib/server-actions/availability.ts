@@ -20,6 +20,7 @@ const availabilityFormSchema = z
   .object({
     startTime: z.string().min(1, START_TIME_REQUIRED_MESSAGE),
     endTime: z.string().min(1, END_TIME_REQUIRED_MESSAGE),
+    date: z.coerce.date(),
     dayOfWeek: z.enum([
       "MONDAY",
       "TUESDAY",
@@ -36,6 +37,7 @@ const availabilityFormSchema = z
 
 async function isAvailabilityOverlap(
   practitionerId: string,
+  date: Date,
   dayOfWeek: DayOfWeek,
   startTime: string,
   endTime: string
@@ -43,6 +45,7 @@ async function isAvailabilityOverlap(
   const existingAvailability = await prisma.availability.findFirst({
     where: {
       practitionerId: practitionerId,
+      date: date, // Vérifier la même date exacte
       dayOfWeek,
       OR: [
         // Case 1: New slot starts during an existing slot
@@ -88,6 +91,7 @@ export async function createAvailability(
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime"),
     dayOfWeek: formData.get("dayOfWeek"),
+    date: formData.get("date"),
   });
 
   if (!validatedFields.success) {
@@ -98,14 +102,16 @@ export async function createAvailability(
         startTime: errorTree.properties?.startTime?.errors,
         endTime: errorTree.properties?.endTime?.errors,
         dayOfWeek: errorTree.properties?.dayOfWeek?.errors,
+        date: errorTree.properties?.date?.errors,
       },
       message: null,
     };
   }
-  const { startTime, endTime, dayOfWeek } = validatedFields.data;
+  const { startTime, endTime, dayOfWeek, date } = validatedFields.data;
   try {
     const existingAvailability = await isAvailabilityOverlap(
       session.user.practitionerId!,
+      date,
       dayOfWeek,
       startTime,
       endTime
@@ -123,6 +129,7 @@ export async function createAvailability(
     await prisma.availability.create({
       data: {
         practitionerId: session.user.practitionerId!,
+        date,
         startTime,
         endTime,
         dayOfWeek,
