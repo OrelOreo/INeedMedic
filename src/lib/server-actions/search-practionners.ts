@@ -5,14 +5,7 @@ export async function searchPractionnersByLocationAndSpeciality(
   location: string,
   specialty: string
 ) {
-  console.log(
-    "🚀 ~ searchPractionnersByLocationAndSpeciality ~ specialty:",
-    specialty
-  );
-  console.log(
-    "🚀 ~ searchPractionnersByLocationAndSpeciality ~ location:",
-    location
-  );
+  if (!location && !specialty) return [];
   const practitioners = await prisma.practitioner.findMany({
     where: {
       AND: [

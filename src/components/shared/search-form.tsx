@@ -104,7 +104,7 @@ export default function SearchForm() {
               ) : (
                 communes.map((commune) => (
                   <div
-                    key={`commune-${commune.code} - ${commune.nom}`}
+                    key={`commune-${commune.code} - ${commune.codesPostaux[0]}`}
                     onClick={() => handleCitySelect(commune)}
                     className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
                   >
