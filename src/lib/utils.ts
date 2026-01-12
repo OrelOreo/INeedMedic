@@ -22,7 +22,7 @@ export function canCancelAppointment(
   appointment: AppointmentWithRelations
 ): boolean {
   const now = new Date();
-  const appointmentDate = new Date(appointment.startDateTime);
+  const appointmentDate = new Date(appointment.date);
   const hoursUntilAppointment =
     (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
