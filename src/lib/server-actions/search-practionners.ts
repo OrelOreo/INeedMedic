@@ -2,15 +2,23 @@
 import { prisma } from "@/db/prisma";
 
 export async function searchPractionnersByLocationAndSpeciality(
-  city: string,
+  location: string,
   specialty: string
 ) {
+  console.log(
+    "🚀 ~ searchPractionnersByLocationAndSpeciality ~ specialty:",
+    specialty
+  );
+  console.log(
+    "🚀 ~ searchPractionnersByLocationAndSpeciality ~ location:",
+    location
+  );
   const practitioners = await prisma.practitioner.findMany({
     where: {
       AND: [
         {
           city: {
-            contains: city,
+            contains: location,
             mode: "insensitive",
           },
         },

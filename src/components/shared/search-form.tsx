@@ -18,8 +18,12 @@ interface Commune {
   nom: string;
   code: string;
   codeDepartement: string;
+  siren: string;
+  codeEpci: string;
+  codeRegion: string;
   codesPostaux: string[];
   population: number;
+  _score: string;
 }
 
 export default function SearchForm() {
@@ -48,6 +52,7 @@ export default function SearchForm() {
           )}&limit=10`
         );
         const data: Commune[] = await response.json();
+        console.log("🚀 ~ SearchForm ~ data:", data);
         setCommunes([...communes, ...data]);
       } catch (error) {
         console.error("Erreur lors de la recherche de communes:", error);
@@ -100,7 +105,7 @@ export default function SearchForm() {
               ) : (
                 communes.map((commune) => (
                   <div
-                    key={commune.code}
+                    key={`commune-${commune.code} - ${commune.nom}`}
                     onClick={() => handleCitySelect(commune)}
                     className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
                   >

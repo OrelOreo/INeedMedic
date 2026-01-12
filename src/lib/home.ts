@@ -1,18 +1,18 @@
 import { Calendar, Users, Shield } from "lucide-react";
 
 export const SPECIALTIES = [
-  { value: "generaliste", label: "Médecin généraliste" },
+  { value: "généraliste", label: "Médecin généraliste" },
   { value: "cardiologue", label: "Cardiologue" },
   { value: "dermatologue", label: "Dermatologue" },
-  { value: "gynecologue", label: "Gynécologue" },
+  { value: "gynécologue", label: "Gynécologue" },
   { value: "ophtalmologue", label: "Ophtalmologue" },
   { value: "orl", label: "ORL" },
-  { value: "pediatre", label: "Pédiatre" },
+  { value: "pédiatre", label: "Pédiatre" },
   { value: "psychiatre", label: "Psychiatre" },
   { value: "psychologue", label: "Psychologue" },
   { value: "radiologue", label: "Radiologue" },
   { value: "dentiste", label: "Dentiste" },
-  { value: "kinesitherapeute", label: "Kinésithérapeute" },
+  { value: "kinésithérapeute", label: "Kinésithérapeute" },
 ] as const;
 
 export const FEATURES = [
