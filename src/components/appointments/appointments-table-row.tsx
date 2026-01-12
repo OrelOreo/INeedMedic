@@ -41,13 +41,13 @@ export function AppointmentTableRow({
       <TableCell>
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span>{formatDate(appointment.startDateTime)}</span>
+          <span>{formatDate(appointment.date)}</span>
         </div>
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <span>{formatTime(appointment.startDateTime)}</span>
+          <span>{appointment.startTime}</span>
         </div>
       </TableCell>
       <TableCell>
