@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +11,8 @@ import {
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { days, getUserNameInitials } from "@/lib/utils";
 import type { PractionnersWithRelation } from "@/types/practionners-with-relation";
+import { useState } from "react";
+import AppointmentForm from "./appointment-form";
 
 type PractitionerListProps = {
   practitioners: PractionnersWithRelation[];
@@ -52,6 +55,11 @@ const renderEmptySlots = (count: number, dayKey: string) => {
 export default function PractitionerList({
   practitioners,
 }: PractitionerListProps) {
+  const [selectedAppointment, setSelectedAppointment] = useState<{
+    practitioner: PractionnersWithRelation;
+    availability: PractionnersWithRelation["availabilities"][0];
+  } | null>(null);
+
   return (
     <div className="grid gap-6 mt-6">
       {practitioners.map((practitioner) => {
@@ -126,6 +134,12 @@ export default function PractitionerList({
                                     variant="outline"
                                     size="sm"
                                     className="h-8 px-1 cursor-pointer"
+                                    onClick={() =>
+                                      setSelectedAppointment({
+                                        practitioner,
+                                        availability,
+                                      })
+                                    }
                                   >
                                     {availability.startTime}
                                   </Button>
@@ -142,6 +156,14 @@ export default function PractitionerList({
           </Card>
         );
       })}
+
+      {selectedAppointment && (
+        <AppointmentForm
+          selectedAppointment={selectedAppointment}
+          days={days}
+          onClose={() => setSelectedAppointment(null)}
+        />
+      )}
     </div>
   );
 }

@@ -106,3 +106,48 @@ export async function cancelAppointment(appointment: AppointmentWithRelations) {
     };
   }
 }
+
+export async function createAppointment(
+  practitionerId: string,
+  startTime: string,
+  endTime: string,
+  clientNotes?: string
+) {
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    return { statut: "error", message: NON_AUTHORIZED_ACTION };
+  }
+
+  // const startDateTime = new Date(startTime);
+  // const endDateTime = new Date(endTime);
+
+  console.log("🚀 ~ createAppointment ~ clientNotes:", clientNotes);
+  console.log("🚀 ~ createAppointment ~ startDateTime:", startTime);
+  console.log("🚀 ~ createAppointment ~ endDateTime:", endTime);
+  console.log("🚀 ~ createAppointment ~ practitionerId:", practitionerId);
+
+  try {
+    await prisma.appointment.create({
+      data: {
+        practitionerId,
+        clientId: session.user.id,
+        startDateTime: startTime,
+        endDateTime: endTime,
+        clientNotes,
+      },
+    });
+
+    revalidatePath("/search");
+    return {
+      statut: "success",
+      message: "Rendez-vous créé avec succès.",
+    };
+  } catch (error) {
+    console.error("🚀 ~ createAppointment ~ error:", error);
+    return {
+      statut: "error",
+      message: "Erreur lors de la création du rendez-vous.",
+    };
+  }
+}
