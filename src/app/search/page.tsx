@@ -9,7 +9,6 @@ export default async function SearchPage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  console.log("🚀 ~ SearchPage ~ searchParams:", searchParams);
 
   const practitioners = await searchPractionnersByLocationAndSpeciality(
     searchParams?.location || "",

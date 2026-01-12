@@ -13,6 +13,8 @@ import { days, getUserNameInitials } from "@/lib/utils";
 import type { PractionnersWithRelation } from "@/types/practionners-with-relation";
 import { useState } from "react";
 import AppointmentForm from "./appointment-form";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 type PractitionerListProps = {
   practitioners: PractionnersWithRelation[];
@@ -32,10 +34,29 @@ export default function PractitionerList({
   practitioners,
 }: PractitionerListProps) {
   console.log("🚀 ~ PractitionerList ~ practitioners:", practitioners);
+  const session = useSession();
+  console.log("🚀 ~ PractitionerList ~ session:", session);
   const [selectedAppointment, setSelectedAppointment] = useState<{
     practitioner: PractionnersWithRelation;
     availability: PractionnersWithRelation["availabilities"][0];
   } | null>(null);
+
+  const handleSelectAppointment = ({
+    practitioner,
+    availability,
+  }: {
+    practitioner: PractionnersWithRelation;
+    availability: PractionnersWithRelation["availabilities"][0];
+  }) => {
+    if (!session.data) {
+      redirect("/login");
+    }
+    setSelectedAppointment({
+      ...selectedAppointment,
+      practitioner,
+      availability,
+    });
+  };
 
   return (
     <div className="grid gap-6 mt-6">
@@ -121,7 +142,7 @@ export default function PractitionerList({
                               size="sm"
                               className="h-8 px-2 cursor-pointer"
                               onClick={() =>
-                                setSelectedAppointment({
+                                handleSelectAppointment({
                                   practitioner,
                                   availability,
                                 })
