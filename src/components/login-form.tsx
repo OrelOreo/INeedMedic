@@ -97,10 +97,11 @@ export default function LoginForm() {
         <CardContent>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="email">
+              <Label htmlFor="email" aria-required="true">
                 Email<span className="text-red-500">*</span>
               </Label>
               <Input
+                autoComplete="email"
                 id="email"
                 type="email"
                 placeholder="email@example.com"
@@ -124,11 +125,12 @@ export default function LoginForm() {
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
-                <Label htmlFor="password">
+                <Label htmlFor="password" aria-required="true">
                   Mot de passe<span className="text-red-500">*</span>
                 </Label>
               </div>
               <Input
+                autoComplete="current-password"
                 id="password"
                 type="password"
                 value={formData.password}
@@ -162,13 +164,21 @@ export default function LoginForm() {
         </CardContent>
         <CardFooter className="flex-col mt-6 gap-2">
           <Button
+            aria-disabled={isLoading}
+            aria-busy={isLoading}
             type="submit"
             className="w-full cursor-pointer"
             disabled={isLoading}
           >
             Se connecter
           </Button>
-          <Button asChild variant="link" disabled={isLoading}>
+          <Button
+            aria-disabled={isLoading}
+            aria-busy={isLoading}
+            asChild
+            variant="link"
+            disabled={isLoading}
+          >
             <Link href="/register">S'inscrire</Link>
           </Button>
         </CardFooter>
