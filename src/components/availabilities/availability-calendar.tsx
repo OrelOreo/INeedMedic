@@ -23,6 +23,7 @@ import { type AvailabilityFormState } from "@/types/form-state/availabity-form-s
 import { createAvailability } from "@/lib/server-actions";
 import { days } from "@/lib/utils";
 import { Availability } from "@prisma/client";
+import { DeleteAvailability } from "./buttons";
 
 export default function AvailabilityCalendarForm({
   availabilities,
@@ -91,21 +92,7 @@ export default function AvailabilityCalendarForm({
   }, [selectedDate, availabilities]);
 
   return (
-    <form action={formAction} className="flex flex-col gap-6">
-      {/* Hidden inputs to store form values */}
-      <input
-        type="hidden"
-        name="date"
-        value={formatDateToLocal(selectedDate)}
-      />
-      <input
-        type="hidden"
-        name="dayOfWeek"
-        value={getDayOfWeek(selectedDate)}
-      />
-      <input type="hidden" name="startTime" value={startTime} />
-      <input type="hidden" name="endTime" value={endTime} />
-
+    <div className="flex flex-col gap-6">
       <Card className="border border-emerald-100">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900">
@@ -158,70 +145,102 @@ export default function AvailabilityCalendarForm({
               </h4>
               <div className="space-y-2">
                 {existingSlots.map((slot) => (
-                  <div
-                    key={slot.id}
-                    className="flex items-center gap-2 text-sm text-emerald-700"
-                  >
-                    <Clock className="w-4 h-4" />
-                    <span>
-                      {slot.startTime} - {slot.endTime}
-                    </span>
+                  <div key={slot.id}>
+                    <div className="flex items-center gap-2 text-sm text-emerald-700">
+                      <Clock className="w-4 h-4" />
+                      <span>
+                        {slot.startTime} - {slot.endTime}
+                      </span>
+                    </div>
+                    <DeleteAvailability id={slot.id} />
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <form action={formAction}>
             {/* Start Time */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Heure de début
-              </label>
-              <Select value={startTime} onValueChange={setStartTime}>
-                <SelectTrigger className="border-2 border-gray-200 focus:border-emerald-500">
-                  <SelectValue placeholder="--:--" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="hidden"
+                name="date"
+                value={formatDateToLocal(selectedDate)}
+              />
+              <input
+                type="hidden"
+                name="dayOfWeek"
+                value={getDayOfWeek(selectedDate)}
+              />
+              <input type="hidden" name="startTime" value={startTime} />
+              <input type="hidden" name="endTime" value={endTime} />
+              <div>
+                <label
+                  htmlFor="start-time"
+                  className="text-sm font-medium text-gray-700 mb-2 block"
+                >
+                  Heure de début
+                </label>
+                <Select
+                  name="start-time"
+                  value={startTime}
+                  onValueChange={setStartTime}
+                >
+                  <SelectTrigger
+                    id="start-time"
+                    className="border-2 border-gray-200 focus:border-emerald-500"
+                  >
+                    <SelectValue placeholder="--:--" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeSlots.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* End Time */}
+              <div>
+                <label
+                  htmlFor="end-time"
+                  className="text-sm font-medium text-gray-700 mb-2 block"
+                >
+                  Heure de fin
+                </label>
+                <Select
+                  name="end-time"
+                  value={endTime}
+                  onValueChange={setEndTime}
+                >
+                  <SelectTrigger
+                    id="end-time"
+                    className="border-2 border-gray-200 focus:border-emerald-500"
+                  >
+                    <SelectValue placeholder="--:--" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeSlots.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
-            {/* End Time */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Heure de fin
-              </label>
-              <Select value={endTime} onValueChange={setEndTime}>
-                <SelectTrigger className="border-2 border-gray-200 focus:border-emerald-500">
-                  <SelectValue placeholder="--:--" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full cursor-pointer bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
-            disabled={!selectedDate || !startTime || !endTime || isPending}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            {isPending ? "Ajout en cours..." : "Ajouter le créneau"}
-          </Button>
+            <Button
+              type="submit"
+              className="w-full mt-4 cursor-pointer bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+              disabled={!selectedDate || !startTime || !endTime || isPending}
+            >
+              {isPending ? "Ajout en cours..." : "Ajouter le créneau"}
+              <Plus className="w-4 h-4 mr-2" />
+            </Button>
+          </form>
         </CardContent>
       </Card>
-    </form>
+    </div>
   );
 }

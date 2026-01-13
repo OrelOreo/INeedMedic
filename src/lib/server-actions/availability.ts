@@ -175,11 +175,24 @@ export async function getAvailabilities() {
   return availabilities;
 }
 
-export async function deleteAvailability(availabilityId: string) {
+type initialStateType = {
+  message?: string | null;
+  errors?: {
+    globalErrors?: string[];
+  };
+};
+
+export async function deleteAvailability(
+  prevState: initialStateType,
+  availabilityId: string
+) {
   const session = await getSession();
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    return {
+      message: null,
+      errors: { globalErrors: ["Unauthorized"] },
+    };
   }
 
   try {
@@ -190,8 +203,17 @@ export async function deleteAvailability(availabilityId: string) {
       },
     });
     revalidatePath("/dashboard/availability");
+    return {
+      message: "Créneau supprimé avec succès.",
+      errors: {},
+    };
   } catch (error) {
     console.error("Error deleting availability:", error);
-    throw new Error("Error deleting availability");
+    return {
+      errors: {
+        globalErrors: [GENERIC_ERROR_MESSAGE],
+      },
+      message: null,
+    };
   }
 }

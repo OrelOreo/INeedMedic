@@ -1,4 +1,4 @@
-import AvailabilityCalendarForm from "@/components/availabilities/availability-calendar-form";
+import AvailabilityCalendarForm from "@/components/availabilities/availability-calendar";
 import { Metadata } from "next";
 import { getAvailabilities } from "@/lib/server-actions";
 
