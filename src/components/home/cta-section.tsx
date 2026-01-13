@@ -14,7 +14,7 @@ export default function CtaSection() {
         </p>
         <Button
           size="lg"
-          className="bg-white text-emerald-600 hover:bg-emerald-50 shadow-2xl px-8 py-6 text-lg font-semibold"
+          className="bg-white text-emerald-600 hover:bg-emerald-50 shadow-2xl px-8 py-6 text-lg font-semibold cursor-pointer"
         >
           Commencer maintenant
           <ArrowRight className="ml-2 w-5 h-5" />
