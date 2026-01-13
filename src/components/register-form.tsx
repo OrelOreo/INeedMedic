@@ -41,7 +41,10 @@ export default function RegisterForm() {
     errors: {},
   };
 
-  const [state, formAction] = useActionState(registerUser, initialState);
+  const [state, formAction, isLoading] = useActionState(
+    registerUser,
+    initialState
+  );
   const [selectRole, setSelectedRole] = useState<Role>("CLIENT");
 
   return (
@@ -56,7 +59,7 @@ export default function RegisterForm() {
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
                 <UserCircle className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="role">
+                <Label htmlFor="role" aria-required="true">
                   Type de compte <span className="text-red-500">*</span>
                 </Label>
               </div>
@@ -99,7 +102,7 @@ export default function RegisterForm() {
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="email">
+                <Label htmlFor="email" aria-required="true">
                   Email<span className="text-red-500">*</span>
                 </Label>
               </div>
@@ -131,7 +134,7 @@ export default function RegisterForm() {
                 <div className="space-y-2">
                   <div className="flex gap-x-1 items-center">
                     <Stethoscope className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="specialty">
+                    <Label htmlFor="specialty" aria-required="true">
                       Specialité<span className="text-red-500">*</span>
                     </Label>
                   </div>
@@ -165,7 +168,7 @@ export default function RegisterForm() {
                 <div className="space-y-2">
                   <div className="flex gap-x-1 items-center">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="phone">
+                    <Label htmlFor="phone" aria-required="true">
                       Téléphone<span className="text-red-500">*</span>
                     </Label>
                   </div>
@@ -194,7 +197,7 @@ export default function RegisterForm() {
                 <div className="space-y-2">
                   <div className="flex gap-x-1 items-center">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="address">
+                    <Label htmlFor="address" aria-required="true">
                       Adresse<span className="text-red-500">*</span>
                     </Label>
                   </div>
@@ -223,7 +226,7 @@ export default function RegisterForm() {
                 <div className="space-y-2">
                   <div className="flex gap-x-1 items-center">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="city">
+                    <Label htmlFor="city" aria-required="true">
                       Commune<span className="text-red-500">*</span>
                     </Label>
                   </div>
@@ -255,7 +258,7 @@ export default function RegisterForm() {
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="name">
+                <Label htmlFor="name" aria-required="true">
                   Nom complet<span className="text-red-500">*</span>
                 </Label>
               </div>
@@ -285,7 +288,7 @@ export default function RegisterForm() {
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
                 <Lock className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="password">
+                <Label htmlFor="password" aria-required="true">
                   Mot de passe<span className="text-red-500">*</span>
                 </Label>
               </div>
@@ -314,7 +317,7 @@ export default function RegisterForm() {
             <div className="space-y-2">
               <div className="flex gap-x-1 items-center">
                 <Lock className="h-4 w-4 text-muted-foreground" />
-                <Label htmlFor="confirmPassword">
+                <Label htmlFor="confirmPassword" aria-required="true">
                   Confirmer le mot de passe
                   <span className="text-red-500">*</span>
                 </Label>
@@ -359,10 +362,22 @@ export default function RegisterForm() {
           <Separator className="my-6" />
 
           <div className="flex flex-col gap-2">
-            <Button type="submit" className="w-full cursor-pointer">
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              disabled={isLoading}
+              aria-disabled={isLoading}
+              aria-busy={isLoading}
+            >
               S'inscrire
             </Button>
-            <Button asChild variant="link">
+            <Button
+              asChild
+              variant="link"
+              disabled={isLoading}
+              aria-disabled={isLoading}
+              aria-busy={isLoading}
+            >
               <Link href="/login">Déjà un compte ?</Link>
             </Button>
           </div>
