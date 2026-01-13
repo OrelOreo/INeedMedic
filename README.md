@@ -56,7 +56,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 ### Objectifs fonctionnels
 
 - 📅 Permettre aux clients de réserver un rendez-vous en ligne
-- 📧 Automatiser les confirmations et annulations par email
 
 ### Objectifs techniques
 
@@ -92,11 +91,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 - **Next-Auth** - Gestion de l'authentification
 - Gestion des rôles : `client`, `praticien`
 
-### Notifications
-
-- **Resend** - Service d'envoi d'emails
-- Templates d'emails en React
-
 ### Déploiement
 
 - **Vercel** - Hébergement de l'application
@@ -111,7 +105,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 - ✅ Créer un compte
 - 🔍 Consulter les praticiens disponibles
 - 📅 Réserver / annuler un rendez-vous
-- 📧 Recevoir des emails de confirmation
 
 ### 👨‍⚕️ Praticien
 
@@ -141,13 +134,6 @@ De nombreux praticiens (kinésithérapeutes, psychologues, coachs, etc.) utilise
 - Prévention des doubles réservations
 - Système de réservation / annulation
 - Règles d'annulation (ex : délai de 24h minimum)
-
-### 📧 Notifications automatiques
-
-- ✅ Confirmation de rendez-vous
-- ❌ Notification d'annulation
-
----
 
 ## 📐 Logique métier
 
