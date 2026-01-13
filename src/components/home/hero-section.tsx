@@ -1,5 +1,5 @@
 import SearchForm from "../shared/search-form";
-import AppointmentPreview from "./appointment-preview";
+import AppointmentPreview from "../appointments/appointment-preview";
 
 export function HeroSection() {
   return (

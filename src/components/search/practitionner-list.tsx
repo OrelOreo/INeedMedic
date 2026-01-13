@@ -12,7 +12,7 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { days, getUserNameInitials } from "@/lib/utils";
 import type { PractionnersWithRelation } from "@/types/practionners-with-relation";
 import { useState } from "react";
-import AppointmentForm from "./appointment-form";
+import AppointmentForm from "../appointments/appointment-form";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 

@@ -52,7 +52,7 @@ export default function SearchForm() {
           )}&limit=10`
         );
         const data: Commune[] = await response.json();
-        setCommunes([...communes, ...data]);
+        setCommunes(data);
       } catch (error) {
         console.error("Erreur lors de la recherche de communes:", error);
         setCommunes([]);
@@ -71,9 +71,11 @@ export default function SearchForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(false);
     const params = new URLSearchParams();
     if (formData.location) params.set("location", formData.location);
     if (formData.specialty) params.set("specialty", formData.specialty);
+    setIsLoading(true);
     router.push(`/search?${params.toString()}`);
   };
 
@@ -104,7 +106,7 @@ export default function SearchForm() {
               ) : (
                 communes.map((commune) => (
                   <div
-                    key={`commune-${commune.code} - ${commune.codesPostaux[0]}`}
+                    key={`commune-${commune.code}`}
                     onClick={() => handleCitySelect(commune)}
                     className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
                   >
@@ -141,6 +143,7 @@ export default function SearchForm() {
 
         <Button
           type="submit"
+          disabled={isLoading}
           className="w-full cursor-pointer h-12 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg text-base font-semibold group"
         >
           <Search className="w-5 h-5 mr-2" />
