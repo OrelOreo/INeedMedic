@@ -82,13 +82,13 @@ export default function SearchForm() {
   return (
     <Card className="p-4 sm:p-6 bg-white border-2 border-emerald-100 shadow-xl mt-8 w-full">
       <form
+        role="search"
         onSubmit={handleSubmit}
         className="space-y-4 flex flex-col gap-y-2 w-full"
       >
         <div className="relative w-full">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
-            aria-expanded={showSuggestions}
             type="text"
             placeholder="Votre ville (ex: Paris, Lyon...)"
             value={formData.location}
