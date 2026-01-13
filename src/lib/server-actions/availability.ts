@@ -8,6 +8,7 @@ import {
   END_TIME_AFTER_START_TIME_MESSAGE,
   END_TIME_REQUIRED_MESSAGE,
   GENERIC_ERROR_MESSAGE,
+  NON_AUTHORIZED_ACTION,
   SESSION_NOT_FOUND_MESSAGE,
   START_TIME_REQUIRED_MESSAGE,
   TIME_SLOT_CONFLICT_MESSAGE,
@@ -82,6 +83,15 @@ export async function createAvailability(
     return {
       errors: {
         globalErrors: [SESSION_NOT_FOUND_MESSAGE],
+      },
+      message: null,
+    };
+  }
+
+  if (session.user.role !== "PRACTITIONER") {
+    return {
+      errors: {
+        globalErrors: [NON_AUTHORIZED_ACTION],
       },
       message: null,
     };
