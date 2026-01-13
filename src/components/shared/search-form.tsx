@@ -88,6 +88,7 @@ export default function SearchForm() {
         <div className="relative w-full">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
+            aria-expanded={showSuggestions}
             type="text"
             placeholder="Votre ville (ex: Paris, Lyon...)"
             value={formData.location}
@@ -100,12 +101,16 @@ export default function SearchForm() {
             className="pl-10 h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full"
           />
           {showSuggestions && (communes.length > 0 || isLoading) && (
-            <div className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            <div
+              role="listbox"
+              className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+            >
               {isLoading ? (
                 <div className="px-4 py-2 text-gray-500">Recherche...</div>
               ) : (
                 communes.map((commune) => (
                   <div
+                    role="option"
                     key={`commune-${commune.code}`}
                     onClick={() => handleCitySelect(commune)}
                     className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
