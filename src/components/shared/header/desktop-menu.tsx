@@ -11,7 +11,7 @@ export default function DesktopMenu({
   isAuthenticated,
 }: DesktopMenuProps) {
   return (
-    <nav className="hidden md:flex items-center gap-1">
+    <nav className="hidden md:flex items-center gap-1" role="navigation">
       {navItems.map((item) => (
         <Link
           key={item.href}

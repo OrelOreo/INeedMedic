@@ -59,7 +59,7 @@ export default function MobileMenu({
             <SheetDescription></SheetDescription>
           </SheetHeader>
 
-          <nav className="mt-8 flex flex-col gap-2">
+          <nav className="mt-8 flex flex-col gap-2" role="navigation">
             {navItems.map((item) => (
               <Link
                 key={item.href}
