@@ -52,7 +52,6 @@ export default function AvailabilityCalendarForm({
     wrappedCreateAvailability,
     initialState
   );
-  console.log("🚀 ~ AvailabilityCalendarForm ~ state:", state);
 
   const formatDateToLocal = (date: Date | undefined): string => {
     if (!date) return "";

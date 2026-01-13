@@ -30,10 +30,6 @@ export default function AppointmentForm({
   days,
   onClose,
 }: AppointmentFormProps) {
-  // console.log(
-  //   "🚀 ~ AppointmentForm ~ selectedAppointment.availability:",
-  //   selectedAppointment.availability
-  // );
   const [clientNotes, setClientNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 

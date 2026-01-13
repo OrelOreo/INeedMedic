@@ -33,9 +33,7 @@ function getDayLabelFromDate(dateInput: string | Date) {
 export default function PractitionerList({
   practitioners,
 }: PractitionerListProps) {
-  console.log("🚀 ~ PractitionerList ~ practitioners:", practitioners);
   const session = useSession();
-  console.log("🚀 ~ PractitionerList ~ session:", session);
   const [selectedAppointment, setSelectedAppointment] = useState<{
     practitioner: PractionnersWithRelation;
     availability: PractionnersWithRelation["availabilities"][0];
