@@ -18,6 +18,7 @@ import {
 import z from "zod";
 import { revalidatePath } from "next/cache";
 import { AvailabilityFormState } from "@/types/form-state/availabity-form-state";
+import { type initialDeletionStateType } from "@/types/form-state/appointment-form-state";
 
 const availabilityFormSchema = z
   .object({
@@ -180,15 +181,8 @@ export async function getAvailabilities() {
   }
 }
 
-type initialStateType = {
-  message?: string | null;
-  errors?: {
-    globalErrors?: string[];
-  };
-};
-
 export async function deleteAvailability(
-  prevState: initialStateType,
+  prevState: initialDeletionStateType,
   availabilityId: string
 ) {
   const session = await getSession();

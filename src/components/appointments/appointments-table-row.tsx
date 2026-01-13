@@ -11,10 +11,10 @@ import {
   getStatusLabel,
 } from "@/lib/utils";
 
-interface AppointmentTableRowProps {
+type AppointmentTableRowProps = {
   appointment: AppointmentWithRelations;
   role: Role;
-}
+};
 
 export function AppointmentTableRow({
   appointment,

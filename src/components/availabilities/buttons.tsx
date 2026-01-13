@@ -2,21 +2,15 @@ import { Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { deleteAvailability } from "@/lib/server-actions/index";
 import { useActionState } from "react";
-
-type initialStateType = {
-  message?: string | null;
-  errors?: {
-    globalErrors?: string[];
-  };
-};
+import { type initialDeletionStateType } from "@/types/form-state/appointment-form-state";
 
 export function DeleteAvailability({ id }: { id: string }) {
-  const initialState: initialStateType = {
+  const initialState: initialDeletionStateType = {
     message: null,
     errors: {},
   };
   const deleteAvailabilityById = async (
-    prevState: initialStateType,
+    prevState: initialDeletionStateType,
     formData: FormData
   ) => {
     return await deleteAvailability(prevState, id);
