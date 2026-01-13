@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { Role } from "@prisma/client";
-import { formatDate, formatTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import CancelAppointmentButton from "./cancel-appointment-button";
 import type { AppointmentWithRelations } from "@/types/appointment-with-relations";
 import {
@@ -60,7 +60,9 @@ export function AppointmentTableRow({
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <span className="max-w-xs truncate">{appointment.clientNotes}</span>
+            <span className="max-w-xs truncate">
+              {appointment.clientNotes?.trim() ? appointment.clientNotes : "-"}
+            </span>
           </div>
         )}
       </TableCell>
