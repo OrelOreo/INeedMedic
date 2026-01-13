@@ -113,7 +113,9 @@ export default function AvailabilityCalendarForm({
           {state?.errors?.dayOfWeek && (
             <div className="mt-4 text-red-600 text-sm">
               {state.errors?.dayOfWeek.map((error, index) => (
-                <p key={index}>{error}</p>
+                <p aria-atomic="true" aria-live="polite" key={index}>
+                  {error}
+                </p>
               ))}
             </div>
           )}
@@ -210,7 +212,9 @@ export default function AvailabilityCalendarForm({
                 {state?.errors?.startTime && (
                   <div className="mt-4 text-red-600 text-sm">
                     {state.errors?.startTime.map((error, index) => (
-                      <p key={index}>{error}</p>
+                      <p aria-atomic="true" aria-live="polite" key={index}>
+                        {error}
+                      </p>
                     ))}
                   </div>
                 )}
@@ -245,7 +249,9 @@ export default function AvailabilityCalendarForm({
                 {state?.errors?.endTime && (
                   <div className="mt-4 text-red-600 text-sm">
                     {state.errors?.endTime.map((error, index) => (
-                      <p key={index}>{error}</p>
+                      <p aria-atomic="true" aria-live="polite" key={index}>
+                        {error}
+                      </p>
                     ))}
                   </div>
                 )}
@@ -262,7 +268,9 @@ export default function AvailabilityCalendarForm({
             {state?.errors?.globalErrors && (
               <div className="mt-4 text-red-600 text-sm">
                 {state.errors.globalErrors.map((error, index) => (
-                  <p key={index}>{error}</p>
+                  <p aria-atomic="true" aria-live="polite" key={index}>
+                    {error}
+                  </p>
                 ))}
               </div>
             )}
