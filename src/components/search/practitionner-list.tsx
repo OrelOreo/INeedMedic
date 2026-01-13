@@ -136,6 +136,7 @@ export default function PractitionerList({
                               {getDayLabelFromDate(availability.date)}
                             </span>
                             <Button
+                              aria-haspopup="dialog"
                               variant="outline"
                               size="sm"
                               className="h-8 px-2 cursor-pointer"

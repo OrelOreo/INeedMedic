@@ -97,6 +97,8 @@ export default function AppointmentForm({
             </div>
             <div className="flex justify-end gap-2">
               <Button
+                aria-busy={isSubmitting}
+                aria-disabled={isSubmitting}
                 disabled={isSubmitting}
                 type="button"
                 variant="outline"
@@ -107,6 +109,8 @@ export default function AppointmentForm({
               </Button>
               <Button
                 disabled={isSubmitting}
+                aria-disabled={isSubmitting}
+                aria-busy={isSubmitting}
                 type="submit"
                 className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
               >
