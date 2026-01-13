@@ -15,7 +15,7 @@ import { Label } from "./ui/label";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import z, { email } from "zod";
+import z from "zod";
 import {
   EMAIL_INVALID_MESSAGE,
   EMAIL_OR_PASSWORD_INVALID_MESSAGE,
@@ -77,7 +77,6 @@ export default function LoginForm() {
       if (result?.error) {
         setGlobalError(EMAIL_OR_PASSWORD_INVALID_MESSAGE);
       } else if (result?.ok) {
-        // router.push("/");
         router.refresh();
       }
     } catch (error) {

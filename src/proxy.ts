@@ -12,7 +12,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (role === "PRACTITIONER" && pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(
+      new URL("/dashboard/appointments", request.url)
+    );
   }
 
   if (role === "CLIENT" && pathname.startsWith("/login")) {

@@ -7,13 +7,11 @@ export const NAV_ITEMS = {
   ] as const satisfies readonly NavItem[],
 
   client: [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Profil", href: "/profile" },
     { label: "Mes rendez-vous", href: "/dashboard/appointments" },
   ] as const satisfies readonly NavItem[],
 
   practitioner: [
-    { label: "Dashboard", href: "/dashboard" },
     { label: "Profil", href: "/profile" },
     { label: "Rendez-vous", href: "/dashboard/appointments" },
     { label: "Disponibilités", href: "/dashboard/availability" },
@@ -38,5 +36,5 @@ export function getNavigationItems(
 }
 
 export function getHomeRefByRole(userRole?: UserRole): string {
-  return userRole === "PRACTITIONER" ? "/dashboard" : "/";
+  return userRole === "PRACTITIONER" ? "/dashboard/appointments" : "/";
 }
