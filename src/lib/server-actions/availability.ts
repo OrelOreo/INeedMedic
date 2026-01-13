@@ -113,6 +113,7 @@ export async function createAvailability(
         endTime: errorTree.properties?.endTime?.errors,
         dayOfWeek: errorTree.properties?.dayOfWeek?.errors,
         date: errorTree.properties?.date?.errors,
+        globalErrors: errorTree.errors,
       },
       message: null,
     };
@@ -129,9 +130,7 @@ export async function createAvailability(
     if (existingAvailability) {
       return {
         errors: {
-          startTime: [TIME_SLOT_CONFLICT_MESSAGE],
-          endTime: [TIME_SLOT_CONFLICT_MESSAGE],
-          dayOfWeek: [TIME_SLOT_CONFLICT_MESSAGE],
+          globalErrors: [TIME_SLOT_CONFLICT_MESSAGE],
         },
         message: null,
       };

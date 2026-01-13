@@ -52,6 +52,7 @@ export default function AvailabilityCalendarForm({
     wrappedCreateAvailability,
     initialState
   );
+  console.log("🚀 ~ AvailabilityCalendarForm ~ state:", state);
 
   const formatDateToLocal = (date: Date | undefined): string => {
     if (!date) return "";
@@ -110,6 +111,13 @@ export default function AvailabilityCalendarForm({
             onSelect={setSelectedDate}
             className="rounded-md border border-emerald-100"
           />
+          {state?.errors?.dayOfWeek && (
+            <div className="mt-4 text-red-600 text-sm">
+              {state.errors?.dayOfWeek.map((error, index) => (
+                <p key={index}>{error}</p>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
       <Card className="border-2 border-emerald-100">
@@ -200,6 +208,13 @@ export default function AvailabilityCalendarForm({
                     ))}
                   </SelectContent>
                 </Select>
+                {state?.errors?.startTime && (
+                  <div className="mt-4 text-red-600 text-sm">
+                    {state.errors?.startTime.map((error, index) => (
+                      <p key={index}>{error}</p>
+                    ))}
+                  </div>
+                )}
               </div>
               {/* End Time */}
               <div>
@@ -228,6 +243,13 @@ export default function AvailabilityCalendarForm({
                     ))}
                   </SelectContent>
                 </Select>
+                {state?.errors?.endTime && (
+                  <div className="mt-4 text-red-600 text-sm">
+                    {state.errors?.endTime.map((error, index) => (
+                      <p key={index}>{error}</p>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <Button
@@ -238,6 +260,13 @@ export default function AvailabilityCalendarForm({
               {isPending ? "Ajout en cours..." : "Ajouter le créneau"}
               <Plus className="w-4 h-4 mr-2" />
             </Button>
+            {state?.errors?.globalErrors && (
+              <div className="mt-4 text-red-600 text-sm">
+                {state.errors.globalErrors.map((error, index) => (
+                  <p key={index}>{error}</p>
+                ))}
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>
