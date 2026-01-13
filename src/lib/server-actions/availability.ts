@@ -5,6 +5,8 @@ import { DayOfWeek } from "@prisma/client";
 import { getSession } from "../helpers/auth-helpers";
 import {
   AVAILABILITY_CREATION_SUCCESS_MESSAGE,
+  AVAILABILITY_DELETION_ERROR_MESSAGE,
+  AVAILABILITY_DELETION_SUCCESS_MESSAGE,
   END_TIME_AFTER_START_TIME_MESSAGE,
   END_TIME_REQUIRED_MESSAGE,
   GENERIC_ERROR_MESSAGE,
@@ -161,17 +163,21 @@ export async function createAvailability(
 }
 
 export async function getAvailabilities() {
-  const session = await getSession();
-
-  if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+  try {
+    const session = await getSession();
+    if (!session?.user?.id) {
+      throw new Error(NON_AUTHORIZED_ACTION);
+    }
+    const availabilities = await prisma.availability.findMany({
+      where: {
+        practitionerId: session?.user.practitionerId!,
+      },
+    });
+    return availabilities;
+  } catch (error) {
+    console.error("Error in getAvailabilities:", error);
+    return [];
   }
-  const availabilities = await prisma.availability.findMany({
-    where: {
-      practitionerId: session?.user.practitionerId!,
-    },
-  });
-  return availabilities;
 }
 
 type initialStateType = {
@@ -190,7 +196,7 @@ export async function deleteAvailability(
   if (!session?.user?.id) {
     return {
       message: null,
-      errors: { globalErrors: ["Unauthorized"] },
+      errors: { globalErrors: [] },
     };
   }
 
@@ -203,11 +209,11 @@ export async function deleteAvailability(
     });
     revalidatePath("/dashboard/availability");
     return {
-      message: "Créneau supprimé avec succès.",
+      message: AVAILABILITY_DELETION_SUCCESS_MESSAGE,
       errors: {},
     };
   } catch (error) {
-    console.error("Error deleting availability:", error);
+    console.error(AVAILABILITY_DELETION_ERROR_MESSAGE, error);
     return {
       errors: {
         globalErrors: [GENERIC_ERROR_MESSAGE],

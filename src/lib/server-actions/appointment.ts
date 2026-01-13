@@ -5,6 +5,8 @@ import { getSession } from "../helpers/auth-helpers";
 import {
   APPOINTMENT_CANCELLATION_ERROR_MESSAGE,
   APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE,
+  APPOINTMENT_CREATION_ERROR_MESSAGE,
+  APPOINTMENT_CREATION_SUCCESS_MESSAGE,
   NON_AUTHORIZED_ACTION,
 } from "../helpers/messages-helpers";
 import { prisma } from "@/db/prisma";
@@ -34,38 +36,44 @@ async function getWhereClauseForUser(): Promise<Prisma.AppointmentWhereInput> {
 }
 
 export async function getAppointmentsByUser() {
-  const whereClause = await getWhereClauseForUser();
-
-  const appointments = await prisma.appointment.findMany({
-    where: whereClause,
-    include: {
-      client: {
-        select: { name: true, email: true },
-      },
-      practitioner: {
-        include: {
-          user: {
-            select: { name: true, email: true },
+  try {
+    const whereClause = await getWhereClauseForUser();
+    const appointments = await prisma.appointment.findMany({
+      where: whereClause,
+      include: {
+        client: {
+          select: { name: true, email: true },
+        },
+        practitioner: {
+          include: {
+            user: {
+              select: { name: true, email: true },
+            },
           },
         },
       },
-    },
-    orderBy: {
-      date: "asc",
-    },
-  });
-
-  return appointments;
+      orderBy: {
+        date: "asc",
+      },
+    });
+    return appointments;
+  } catch (error) {
+    console.error("Error in getAppointmentsByUser:", error);
+    return [];
+  }
 }
 
 export async function getAppointmentsCountByUser() {
-  const whereClause = await getWhereClauseForUser();
-
-  const count = await prisma.appointment.count({
-    where: whereClause,
-  });
-
-  return count;
+  try {
+    const whereClause = await getWhereClauseForUser();
+    const count = await prisma.appointment.count({
+      where: whereClause,
+    });
+    return count;
+  } catch (error) {
+    console.error("Error in getAppointmentsCountByUser:", error);
+    return 0;
+  }
 }
 
 export async function cancelAppointment(appointment: AppointmentWithRelations) {
@@ -135,13 +143,13 @@ export async function createAppointment(
     revalidatePath("/search");
     return {
       statut: "success",
-      message: "Rendez-vous créé avec succès.",
+      message: APPOINTMENT_CREATION_SUCCESS_MESSAGE,
     };
   } catch (error) {
     console.error("🚀 ~ createAppointment ~ error:", error);
     return {
       statut: "error",
-      message: "Erreur lors de la création du rendez-vous.",
+      message: APPOINTMENT_CREATION_ERROR_MESSAGE,
     };
   }
 }

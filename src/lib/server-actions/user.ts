@@ -138,12 +138,17 @@ const userPasswordFormSchema = z
   });
 
 async function isEmailExist(email: string) {
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
-  });
-  return existingUser ? true : false;
+  try {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    return existingUser ? true : false;
+  } catch (error) {
+    console.error("Error checking email existence:", error);
+    return false;
+  }
 }
 
 async function isPasswordValid(userId: string, password: string) {

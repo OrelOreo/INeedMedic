@@ -34,6 +34,10 @@ export const APPOINTMENT_CANCELLATION_SUCCESS_MESSAGE =
 export const APPOINTMENT_CANCELLATION_ERROR_MESSAGE =
   "Échec de l'annulation du rendez-vous.";
 
+export const APPOINTMENT_CREATION_SUCCESS_MESSAGE =
+  "Rendez-vous créé avec succès.";
+export const APPOINTMENT_CREATION_ERROR_MESSAGE =
+  "Échec de la création du rendez-vous.";
 export const START_TIME_REQUIRED_MESSAGE = "L'heure de début est requise.";
 export const END_TIME_REQUIRED_MESSAGE = "L'heure de fin est requise.";
 export const END_TIME_AFTER_START_TIME_MESSAGE =
