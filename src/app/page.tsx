@@ -6,7 +6,7 @@ import Footer from "@/components/shared/footer";
 
 export default async function HomePage() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <main className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50">
       <HeroSection />
 
       <FeatureSection />
@@ -15,6 +15,6 @@ export default async function HomePage() {
 
       <CtaSection />
       <Footer />
-    </div>
+    </main>
   );
 }

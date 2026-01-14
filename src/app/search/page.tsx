@@ -1,5 +1,5 @@
 import PractitionerList from "@/components/search/practitionner-list";
-import SearchForm from "@/components/search/search-form";
+import SearchFormWrapper from "@/components/search/search-form-wrapper";
 import { searchPractionnersByLocationAndSpeciality } from "@/lib/server-actions/index";
 
 export default async function SearchPage(props: {
@@ -26,7 +26,7 @@ export default async function SearchPage(props: {
           disponible{practitioners.length > 1 ? "s" : ""}
         </p>
       </div>
-      <SearchForm />
+      <SearchFormWrapper />
 
       <PractitionerList practitioners={practitioners} />
     </main>

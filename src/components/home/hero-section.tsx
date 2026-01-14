@@ -1,5 +1,5 @@
-import SearchForm from "../search/search-form";
 import AppointmentPreview from "../appointments/appointment-preview";
+import SearchFormWrapper from "../search/search-form-wrapper";
 
 export function HeroSection() {
   return (
@@ -26,7 +26,7 @@ export function HeroSection() {
             et réservez votre consultation en toute simplicité.
           </p>
 
-          <SearchForm />
+          <SearchFormWrapper />
         </div>
         <AppointmentPreview />
       </div>
