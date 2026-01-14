@@ -8,12 +8,16 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  testEnvironment: "jest-environment-jsdom",
+  testEnvironment: "node",
   moduleNameMapper: {
     // Handle module aliases
-    "^@/(.*)$": "<rootDir>/$1",
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
-  collectCoverage: true,
+  transformIgnorePatterns: ["/node_modules/(?!jose|openid-client)/"],
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
+  },
+  collectCoverage: false,
   collectCoverageFrom: [
     "app/**/*.{js,jsx,ts,tsx}",
     "src/**/*.{js,jsx,ts,tsx}",

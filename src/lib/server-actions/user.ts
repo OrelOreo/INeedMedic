@@ -137,7 +137,7 @@ const userPasswordFormSchema = z
     path: ["confirmPassword"],
   });
 
-async function isEmailExist(email: string) {
+export async function isEmailExist(email: string) {
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
