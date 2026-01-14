@@ -5,6 +5,7 @@ import { cancelAppointment } from "@/lib/server-actions/appointment";
 import { toast } from "sonner";
 import { useState } from "react";
 import { AppointmentWithRelations } from "@/types/appointment-with-relations";
+import { Spinner } from "../ui/spinner";
 
 type CancelAppointmentButtonProps = {
   appointment: AppointmentWithRelations;
@@ -40,7 +41,8 @@ export default function CancelAppointmentButton({
       size="sm"
       disabled={isLoading}
     >
-      {isLoading ? "Annulation..." : "Annuler le rendez-vous"}
+      Annuler le rendez-vous
+      {isLoading && <Spinner className="ml-2" />}
     </Button>
   );
 }

@@ -19,6 +19,7 @@ import {
 } from "./ui/select";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "./ui/spinner";
 import { useActionState, useState } from "react";
 import { registerUser } from "@/lib/server-actions/index";
 import {
@@ -376,6 +377,7 @@ export default function RegisterForm() {
               aria-busy={isLoading}
             >
               S'inscrire
+              {isLoading && <Spinner className="ml-2" />}
             </Button>
             <Button
               asChild

@@ -4,6 +4,7 @@ import { deleteAvailability } from "@/lib/server-actions/index";
 import { useActionState } from "react";
 import { type initialDeletionStateType } from "@/types/form-state/appointment-form-state";
 import { Availability } from "@prisma/client";
+import { Spinner } from "../ui/spinner";
 
 export function DeleteAvailability({
   availability,
@@ -33,7 +34,11 @@ export function DeleteAvailability({
         disabled={isPending}
       >
         Supprimer ce créneau
-        <Trash2 className="w-4 h-4" />
+        {isPending ? (
+          <Spinner className="ml-2" />
+        ) : (
+          <Trash2 className="w-4 h-4" />
+        )}
       </Button>
     </form>
   );

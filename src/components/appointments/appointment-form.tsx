@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { PractionnersWithRelation } from "@/types/practionners-with-relation";
 import { DayOfWeek } from "@prisma/client";
 import { createAppointment } from "@/lib/server-actions";
+import { Spinner } from "../ui/spinner";
 
 type AppointmentFormProps = {
   selectedAppointment: {
@@ -115,6 +116,7 @@ export default function AppointmentForm({
                 className="bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
               >
                 Confirmer le rendez-vous
+                {isSubmitting && <Spinner className="ml-2" />}
               </Button>
             </div>
           </form>

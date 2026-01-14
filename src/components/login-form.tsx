@@ -21,6 +21,7 @@ import {
   EMAIL_OR_PASSWORD_INVALID_MESSAGE,
   REQUIRE_PASSWORD_MESSAGE,
 } from "@/lib/helpers/messages-helpers";
+import { Spinner } from "./ui/spinner";
 
 interface LoginFormData {
   email: string;
@@ -171,6 +172,7 @@ export default function LoginForm() {
             disabled={isLoading}
           >
             Se connecter
+            {isLoading && <Spinner className="ml-2" />}
           </Button>
           <Button
             aria-disabled={isLoading}

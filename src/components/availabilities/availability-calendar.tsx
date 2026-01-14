@@ -24,6 +24,7 @@ import { createAvailability } from "@/lib/server-actions";
 import { days } from "@/lib/utils";
 import { Availability } from "@prisma/client";
 import { DeleteAvailability } from "./buttons";
+import { Spinner } from "../ui/spinner";
 
 export default function AvailabilityCalendarForm({
   availabilities,
@@ -262,8 +263,12 @@ export default function AvailabilityCalendarForm({
               className="w-full mt-4 cursor-pointer bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
               disabled={!selectedDate || !startTime || !endTime || isPending}
             >
-              {isPending ? "Ajout en cours..." : "Ajouter le créneau"}
-              <Plus className="w-4 h-4 mr-2" />
+              Ajouter le créneau
+              {isPending ? (
+                <Spinner className="ml-2" />
+              ) : (
+                <Plus className="w-4 h-4 mr-2" />
+              )}
             </Button>
             {state?.errors?.globalErrors && (
               <div className="mt-4 text-red-600 text-sm">
