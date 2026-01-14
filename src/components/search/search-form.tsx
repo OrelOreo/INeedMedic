@@ -1,73 +1,16 @@
 "use client";
 import { Card } from "../ui/card";
-import { ArrowRight, MapPin, Search, Stethoscope } from "lucide-react";
-import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { ArrowRight, Search } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SPECIALTIES } from "@/lib/home";
-
-interface Commune {
-  nom: string;
-  code: string;
-  codeDepartement: string;
-  siren: string;
-  codeEpci: string;
-  codeRegion: string;
-  codesPostaux: string[];
-  population: number;
-  _score: string;
-}
+import { CommuneSearchInput } from "./commune-search-input";
+import { SpecialtySelect } from "./specialty-select";
 
 export default function SearchForm() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    location: "",
-    specialty: "",
-  });
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [communes, setCommunes] = useState<Commune[]>([]);
+  const [formData, setFormData] = useState({ location: "", specialty: "" });
   const [isLoading, setIsLoading] = useState(false);
-
-  // Debounce effect
-  useEffect(() => {
-    if (!formData.location || formData.location.length < 2) {
-      setCommunes([]);
-      return;
-    }
-
-    const timeoutId = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(
-            formData.location
-          )}&limit=10`
-        );
-        const data: Commune[] = await response.json();
-        setCommunes(data);
-      } catch (error) {
-        console.error("Erreur lors de la recherche de communes:", error);
-        setCommunes([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 300); // Debounce de 300ms
-
-    return () => clearTimeout(timeoutId);
-  }, [formData.location]);
-
-  const handleCitySelect = (commune: Commune) => {
-    setFormData({ ...formData, location: commune.nom });
-    setShowSuggestions(false);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,66 +29,14 @@ export default function SearchForm() {
         onSubmit={handleSubmit}
         className="space-y-4 flex flex-col gap-y-2 w-full"
       >
-        <div className="relative w-full">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Votre ville (ex: Paris, Lyon...)"
-            value={formData.location}
-            onChange={(e) => {
-              setFormData({ ...formData, location: e.target.value });
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-            className="pl-10 h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full"
-          />
-          {showSuggestions && (communes.length > 0 || isLoading) && (
-            <div
-              role="listbox"
-              className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
-            >
-              {isLoading ? (
-                <div className="px-4 py-2 text-gray-500">Recherche...</div>
-              ) : (
-                communes.map((commune) => (
-                  <div
-                    role="option"
-                    key={`commune-${commune.code}`}
-                    onClick={() => handleCitySelect(commune)}
-                    className="px-4 py-2 hover:bg-emerald-50 cursor-pointer transition-colors"
-                  >
-                    <div className="font-medium">{commune.nom}</div>
-                    <div className="text-xs text-gray-500">
-                      {commune.codesPostaux[0]} - Dép. {commune.codeDepartement}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-        </div>
-        <div className="relative w-full">
-          <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
-          <Select
-            value={formData.specialty}
-            onValueChange={(value) =>
-              setFormData({ ...formData, specialty: value })
-            }
-          >
-            <SelectTrigger className="pl-10 h-12 border-2 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 w-full">
-              <SelectValue placeholder="Type de médecin" />
-            </SelectTrigger>
-            <SelectContent className="w-full">
-              {SPECIALTIES.map((spec) => (
-                <SelectItem key={spec.value} value={spec.value}>
-                  {spec.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
+        <CommuneSearchInput
+          value={formData.location}
+          onChange={(location) => setFormData({ ...formData, location })}
+        />
+        <SpecialtySelect
+          value={formData.specialty}
+          onChange={(specialty) => setFormData({ ...formData, specialty })}
+        />
         <Button
           type="submit"
           disabled={isLoading}

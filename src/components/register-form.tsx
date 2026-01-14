@@ -34,12 +34,15 @@ import {
 import { RegisterFormState } from "@/types/form-state/register-form-state";
 import { Role } from "@prisma/client";
 import { SPECIALTIES } from "@/lib/home";
+import { CommuneSearchInput } from "./search/commune-search-input";
 
 export default function RegisterForm() {
   const initialState: RegisterFormState = {
     message: null,
     errors: {},
   };
+
+  const [city, setCity] = useState<string>("");
 
   const [state, formAction, isLoading] = useActionState(
     registerUser,
@@ -231,12 +234,15 @@ export default function RegisterForm() {
                     </Label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Input
-                      id="city"
+                    <CommuneSearchInput
+                      value={city}
+                      onChange={(communeName: string) => setCity(communeName)}
+                    />
+                    <input
+                      type="hidden"
+                      id="city-hidden"
                       name="city"
-                      type="text"
-                      placeholder="Paris, Lyon, Marseille..."
-                      aria-describedby="city-error"
+                      value={city}
                     />
                   </div>
                   {state.errors?.city &&
