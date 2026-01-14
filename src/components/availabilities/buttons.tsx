@@ -3,21 +3,26 @@ import { Button } from "../ui/button";
 import { deleteAvailability } from "@/lib/server-actions/index";
 import { useActionState } from "react";
 import { type initialDeletionStateType } from "@/types/form-state/appointment-form-state";
+import { Availability } from "@prisma/client";
 
-export function DeleteAvailability({ id }: { id: string }) {
+export function DeleteAvailability({
+  availability,
+}: {
+  availability: Availability;
+}) {
   const initialState: initialDeletionStateType = {
     message: null,
     errors: {},
   };
-  const deleteAvailabilityById = async (
+  const deleteAvailabilityAction = async (
     prevState: initialDeletionStateType,
     formData: FormData
   ) => {
-    return await deleteAvailability(prevState, id);
+    return await deleteAvailability(prevState, availability);
   };
 
   const [state, formAction, isPending] = useActionState(
-    deleteAvailabilityById,
+    deleteAvailabilityAction,
     initialState
   );
   return (

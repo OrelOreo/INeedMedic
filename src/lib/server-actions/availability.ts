@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/db/prisma";
-import { DayOfWeek } from "@prisma/client";
+import { Availability, DayOfWeek } from "@prisma/client";
 import { getSession } from "../helpers/auth-helpers";
 import {
   AVAILABILITY_CREATION_SUCCESS_MESSAGE,
@@ -183,21 +183,28 @@ export async function getAvailabilities() {
 
 export async function deleteAvailability(
   prevState: initialDeletionStateType,
-  availabilityId: string
+  availability: Availability
 ) {
   const session = await getSession();
 
   if (!session?.user?.id) {
     return {
       message: null,
-      errors: { globalErrors: [] },
+      errors: { globalErrors: [NON_AUTHORIZED_ACTION] },
+    };
+  }
+
+  if (session.user.practitionerId !== availability.practitionerId) {
+    return {
+      message: null,
+      errors: { globalErrors: [NON_AUTHORIZED_ACTION] },
     };
   }
 
   try {
     await prisma.availability.delete({
       where: {
-        id: availabilityId,
+        id: availability.id,
         practitionerId: session.user.practitionerId!,
       },
     });

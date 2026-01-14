@@ -153,15 +153,15 @@ export default function AvailabilityCalendarForm({
                 Créneaux déjà ajoutés :
               </h4>
               <div className="space-y-2">
-                {existingSlots.map((slot) => (
-                  <div key={slot.id}>
+                {existingSlots.map((availability) => (
+                  <div key={availability.id}>
                     <div className="flex items-center gap-2 text-sm text-emerald-700">
                       <Clock className="w-4 h-4" />
                       <span>
-                        {slot.startTime} - {slot.endTime}
+                        {availability.startTime} - {availability.endTime}
                       </span>
                     </div>
-                    <DeleteAvailability id={slot.id} />
+                    <DeleteAvailability availability={availability} />
                   </div>
                 ))}
               </div>
