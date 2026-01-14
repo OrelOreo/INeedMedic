@@ -1,3 +1,23 @@
+# Connexion avec des comptes de test
+
+Pour faciliter les tests, vous pouvez vous connecter avec les identifiants suivants, créés par le script de seed :
+
+## Compte Client
+
+- **Email** : alice.client@example.com
+- **Mot de passe** : client1234
+
+## Comptes Praticiens
+
+Tous les praticiens ont le même mot de passe : `praticien1234`
+
+| Nom               | Email                  | Mot de passe  |
+| ----------------- | ---------------------- | ------------- |
+| Dr. Jean Dupont   | jean.dupont@medic.fr   | praticien1234 |
+| Dr. Marie Martin  | marie.martin@medic.fr  | praticien1234 |
+| Dr. Paul Bernard  | paul.bernard@medic.fr  | praticien1234 |
+| Dr. Sophie Dubois | sophie.dubois@medic.fr | praticien1234 |
+
 # 📅 INeedMedic - Application de prise de rendez-vous avec praticiens
 
 ## 📋 Table des matières
