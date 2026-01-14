@@ -1,5 +1,5 @@
 import PractitionerList from "@/components/search/practitionner-list";
-import SearchForm from "@/components/shared/search-form";
+import SearchForm from "@/components/search/search-form";
 import { searchPractionnersByLocationAndSpeciality } from "@/lib/server-actions/index";
 
 export default async function SearchPage(props: {
