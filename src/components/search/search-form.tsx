@@ -2,25 +2,37 @@
 import { Card } from "../ui/card";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CommuneSearchInput } from "./commune-search-input";
 import { SpecialtySelect } from "./specialty-select";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Spinner } from "../ui/spinner";
 
 export default function SearchForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [formData, setFormData] = useState({ location: "", specialty: "" });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(false);
+    setIsLoading(true);
     const params = new URLSearchParams();
     if (formData.location) params.set("location", formData.location);
     if (formData.specialty) params.set("specialty", formData.specialty);
-    setIsLoading(true);
-    router.push(`/search?${params.toString()}`);
+
+    if (pathname === "/") {
+      router.push(`/search?${params.toString()}`);
+    } else {
+      router.replace(`/search?${params.toString()}`);
+    }
   };
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [searchParams.toString()]);
 
   return (
     <Card className="p-4 sm:p-6 bg-white border-2 border-emerald-100 shadow-xl mt-8 w-full">
@@ -44,7 +56,11 @@ export default function SearchForm() {
         >
           <Search className="w-5 h-5 mr-2" />
           Rechercher un médecin
-          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          {isLoading ? (
+            <Spinner className="ml-2" />
+          ) : (
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          )}
         </Button>
       </form>
     </Card>
