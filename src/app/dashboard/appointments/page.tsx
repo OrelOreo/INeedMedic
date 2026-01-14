@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { AppointmentsTable } from "@/components/appointments/appointments-table";
 import { getAppointmentsCountByUser } from "@/lib/server-actions/index";

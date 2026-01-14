@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import AvailabilityCalendarForm from "@/components/availabilities/availability-calendar";
 import { Metadata } from "next";
 import { getAvailabilities } from "@/lib/server-actions";

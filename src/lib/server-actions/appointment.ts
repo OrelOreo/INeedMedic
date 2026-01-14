@@ -12,11 +12,9 @@ import {
 import { prisma } from "@/db/prisma";
 import { AppointmentStatus, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
 
 async function getWhereClauseForUser(): Promise<Prisma.AppointmentWhereInput> {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
 
   if (!session) {
     throw new Error("Unauthorized");
