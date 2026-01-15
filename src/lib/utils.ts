@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { AppointmentStatus, DayOfWeek } from "@prisma/client";
 import type { AppointmentWithRelations } from "@/types/appointment-with-relations";
+import { PractionnersWithRelation } from "@/types/practionners-with-relation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,6 +19,15 @@ export function formatTime(date: Date) {
   });
 }
 
+export function getDayLabelFromDate(dateInput: string | Date) {
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+  return date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+  });
+}
+
 export function canCancelAppointment(
   appointment: AppointmentWithRelations
 ): boolean {
@@ -31,6 +41,19 @@ export function canCancelAppointment(
   const isNotCancelled = appointment.status !== AppointmentStatus.CANCELLED;
 
   return isFuture && isMoreThan24Hours && isNotCancelled;
+}
+
+export function isAvailabilityFree(
+  availability: PractionnersWithRelation["availabilities"][0],
+  appointments: PractionnersWithRelation["appointments"] | undefined
+) {
+  return !appointments?.some(
+    (appointment) =>
+      new Date(appointment.date).toISOString() ===
+        new Date(availability.date).toISOString() &&
+      appointment.startTime === availability.startTime &&
+      appointment.endTime === availability.endTime
+  );
 }
 
 export function getStatusBadgeVariant(

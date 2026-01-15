@@ -9,7 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { days, getUserNameInitials } from "@/lib/utils";
+import {
+  days,
+  getDayLabelFromDate,
+  getUserNameInitials,
+  isAvailabilityFree,
+} from "@/lib/utils";
 import type { PractionnersWithRelation } from "@/types/practionners-with-relation";
 import { useState } from "react";
 import AppointmentForm from "../appointments/appointment-form";
@@ -19,16 +24,6 @@ import { redirect } from "next/navigation";
 type PractitionerListProps = {
   practitioners: PractionnersWithRelation[];
 };
-
-// Helper to get day label from a date string (YYYY-MM-DD)
-function getDayLabelFromDate(dateInput: string | Date) {
-  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
-  return date.toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "2-digit",
-  });
-}
 
 export default function PractitionerList({
   practitioners,
@@ -116,16 +111,11 @@ export default function PractitionerList({
                         </span>
                       )}
                       {practitioner.availabilities
-                        .filter(
-                          (availability) =>
-                            !practitioner.appointments?.some(
-                              (appointment) =>
-                                new Date(appointment.date).toISOString() ===
-                                  new Date(availability.date).toISOString() &&
-                                appointment.startTime ===
-                                  availability.startTime &&
-                                appointment.endTime === availability.endTime
-                            )
+                        .filter((availability) =>
+                          isAvailabilityFree(
+                            availability,
+                            practitioner.appointments
+                          )
                         )
                         .map((availability) => (
                           <div
