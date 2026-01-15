@@ -1,6 +1,7 @@
 import { registerUser, isEmailExist } from "@/lib/server-actions/index";
 import { hash } from "bcryptjs";
 import { prisma } from "@/db/prisma";
+import { GENERIC_ERROR_MESSAGE } from "@/lib/helpers/messages-helpers";
 
 /**
  * EXEMPLE: Tests Unitaires pour Server Actions (Next.js)
@@ -31,6 +32,7 @@ jest.mock("bcryptjs", () => ({
 }));
 
 describe("Auth server actions", () => {
+  let initialState = { errors: {}, message: null };
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -42,8 +44,18 @@ describe("Auth server actions", () => {
       role: "CLIENT",
     };
     describe("Validation", () => {
+      it("should reject with empty role", async () => {
+        const formData = new FormData();
+        formData.set("name", validUserData.name);
+        formData.set("email", validUserData.email);
+        formData.set("password", validUserData.password);
+        formData.set("confirmPassword", validUserData.password);
+        formData.set("role", "");
+        const result = await registerUser(initialState, formData);
+
+        expect(result.errors).toHaveProperty("role");
+      });
       it("should reject empty name", async () => {
-        const initialState = { errors: {}, message: null };
         const formData = new FormData();
         formData.set("name", "");
         formData.set("email", validUserData.email);
@@ -55,7 +67,6 @@ describe("Auth server actions", () => {
         expect(result.errors).toHaveProperty("name");
       });
       it("should reject invalid email format", async () => {
-        const initialState = { errors: {}, message: null };
         const formData = new FormData();
         formData.set("name", validUserData.name);
         formData.set("email", "invalid-email");
@@ -67,7 +78,6 @@ describe("Auth server actions", () => {
         expect(result.errors).toHaveProperty("email");
       });
       it("should reject weak password", async () => {
-        const initialState = { errors: {}, message: null };
         const formData = new FormData();
         formData.set("name", validUserData.name);
         formData.set("email", validUserData.email);
@@ -77,6 +87,17 @@ describe("Auth server actions", () => {
         const result = await registerUser(initialState, formData);
 
         expect(result.errors).toHaveProperty("password");
+      });
+      it("should reject non-matching passwords", async () => {
+        const formData = new FormData();
+        formData.set("name", validUserData.name);
+        formData.set("email", validUserData.email);
+        formData.set("password", validUserData.password);
+        formData.set("confirmPassword", "DifferentPass123");
+        formData.set("role", validUserData.role);
+        const result = await registerUser(initialState, formData);
+
+        expect(result.errors).toHaveProperty("confirmPassword");
       });
     });
   });
