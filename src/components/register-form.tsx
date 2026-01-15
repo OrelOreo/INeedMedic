@@ -49,6 +49,7 @@ export default function RegisterForm() {
     registerUser,
     initialState
   );
+  console.log("🚀 ~ RegisterForm ~ state:", state);
   const [selectRole, setSelectedRole] = useState<Role>("CLIENT");
 
   return (
@@ -352,10 +353,10 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          {state.errors?.globalErrors && state.message && (
+          {state.errors?.globalErrors && (
             <Alert variant="destructive" className="my-6">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>{state.message}</AlertTitle>
+              <AlertTitle>{state.errors?.globalErrors[0]}</AlertTitle>
             </Alert>
           )}
 
