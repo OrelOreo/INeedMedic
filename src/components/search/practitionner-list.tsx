@@ -109,7 +109,7 @@ export default function PractitionerList({
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">Disponibilités</span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-col md:flex-row  flex-wrap gap-2">
                       {practitioner.availabilities.length === 0 && (
                         <span className="text-gray-400 text-sm">
                           Aucune disponibilité
@@ -139,7 +139,7 @@ export default function PractitionerList({
                               aria-haspopup="dialog"
                               variant="outline"
                               size="sm"
-                              className="h-8 px-2 cursor-pointer"
+                              className="h-8 px-2 cursor-pointer bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white hover:text-white"
                               onClick={() =>
                                 handleSelectAppointment({
                                   practitioner,
