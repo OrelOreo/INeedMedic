@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
     role !== "PRACTITIONER" &&
     pathname.startsWith("/dashboard/availability")
   ) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   if (
