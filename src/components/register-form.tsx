@@ -49,7 +49,6 @@ export default function RegisterForm() {
     registerUser,
     initialState
   );
-  console.log("🚀 ~ RegisterForm ~ state:", state);
   const [selectRole, setSelectedRole] = useState<Role>("CLIENT");
 
   return (
