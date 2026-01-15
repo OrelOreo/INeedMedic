@@ -1,4 +1,4 @@
-import AppointmentPreview from "../appointments/appointment-preview";
+import Image from "next/image";
 import SearchFormWrapper from "../search/search-form-wrapper";
 
 export function HeroSection() {
@@ -28,7 +28,16 @@ export function HeroSection() {
 
           <SearchFormWrapper />
         </div>
-        <AppointmentPreview />
+
+        <Image
+          src="/appointment-preview.png"
+          alt="Appointment Preview"
+          width={600}
+          height={500}
+          quality={80}
+          loading="eager"
+          className="rounded-xl shadow-lg border border-gray-100 bg-white"
+        />
       </div>
     </section>
   );
