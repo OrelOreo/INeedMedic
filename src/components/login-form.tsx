@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { Button } from "./ui/button";
 import {
@@ -76,7 +75,7 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setGlobalError(EMAIL_OR_PASSWORD_INVALID_MESSAGE);
+        setGlobalError(result.error || EMAIL_OR_PASSWORD_INVALID_MESSAGE);
       } else if (result?.ok) {
         router.refresh();
       }

@@ -1,8 +1,15 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/db/prisma";
 import bcrypt from "bcryptjs";
+import { getUserIp } from "@/app/api/user-ip";
+
+const rateLimiter = new RateLimiterMemory({
+  points: 5, // 5 requests
+  duration: 60, // per 60 seconds per IP
+});
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -22,6 +29,16 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
           throw new Error("Email et mot de passe requis.");
+        }
+
+        const userIP = await getUserIp();
+
+        try {
+          await rateLimiter.consume(userIP, 2);
+        } catch (error) {
+          throw new Error(
+            "Trop de tentatives de connexion. Veuillez réessayer plus tard."
+          );
         }
 
         const user = await prisma.user.findUnique({
