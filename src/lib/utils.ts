@@ -8,6 +8,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function isDateInPast(date: Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d < today;
+}
+
 export function formatDate(date: Date) {
   return new Date(date).toLocaleDateString("fr-FR");
 }

@@ -35,6 +35,8 @@ export const authOptions: NextAuthOptions = {
 
         try {
           await rateLimiter.consume(userIP, 2);
+          // Une requête = 2 points
+          // Donc 5 requêtes = 10 points
         } catch (error) {
           throw new Error(
             "Trop de tentatives de connexion. Veuillez réessayer plus tard."

@@ -21,7 +21,7 @@ import {
 import { fr } from "date-fns/locale";
 import { type AvailabilityFormState } from "@/types/form-state/availabity-form-state";
 import { createAvailability } from "@/lib/server-actions";
-import { days } from "@/lib/utils";
+import { days, isDateInPast } from "@/lib/utils";
 import { Availability } from "@prisma/client";
 import { DeleteAvailability } from "./buttons";
 import { Spinner } from "../ui/spinner";
@@ -110,6 +110,7 @@ export default function AvailabilityCalendarForm({
             selected={selectedDate}
             onSelect={setSelectedDate}
             className="rounded-md border border-emerald-100"
+            disabled={isDateInPast}
           />
           {state?.errors?.dayOfWeek && (
             <div className="mt-4 text-red-600 text-sm">
