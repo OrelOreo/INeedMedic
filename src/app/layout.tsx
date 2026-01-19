@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | INeedDoctor",
-    default: "INeedDoctor",
+    template: "%s | INeedMedic",
+    default: "INeedMedic",
   },
   description:
-    "INeedDoctor est une plateforme de prise de rendez-vous médicaux en ligne, permettant aux patients de trouver rapidement un professionnel de santé et de gérer leurs consultations simplement et efficacement.",
+    "INeedMedic est une plateforme de prise de rendez-vous médicaux en ligne, permettant aux patients de trouver rapidement un professionnel de santé et de gérer leurs consultations simplement et efficacement.",
 };
 
 export default async function RootLayout({

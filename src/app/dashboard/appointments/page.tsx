@@ -4,6 +4,11 @@ import { Suspense } from "react";
 import { AppointmentsTable } from "@/components/appointments/appointments-table";
 import { getAppointmentsCountByUser } from "@/lib/server-actions/index";
 import { AppointmentsTableSkeleton } from "@/components/ui/appointments-table-skeleton";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Rendez-vous",
+};
 
 export default async function AppointmentsPage() {
   const countOfAppointments = await getAppointmentsCountByUser();
