@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function CtaSection() {
   return (
@@ -13,11 +14,14 @@ export default function CtaSection() {
           pour leurs rendez-vous médicaux
         </p>
         <Button
+          asChild
           size="lg"
           className="bg-white text-emerald-600 hover:bg-emerald-50 shadow-2xl px-8 py-6 text-lg font-semibold cursor-pointer"
         >
-          Commencer maintenant
-          <ArrowRight className="ml-2 w-5 h-5" />
+          <Link href="/search">
+            Commencer maintenent
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Link>
         </Button>
       </div>
     </section>

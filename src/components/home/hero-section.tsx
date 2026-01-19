@@ -34,7 +34,7 @@ export function HeroSection() {
           alt="Appointment Preview"
           width={600}
           height={500}
-          quality={80}
+          quality={75}
           loading="eager"
           className="rounded-xl shadow-lg border border-gray-100 bg-white"
         />
