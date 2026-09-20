@@ -3,25 +3,14 @@
 import z from "zod";
 import {
   CURRENT_PASSWORD_INCORRECT_MESSAGE,
-  EMAIL_INVALID_MESSAGE,
-  EMAIL_MAX_LENGTH_MESSAGE,
   GENERIC_ERROR_MESSAGE,
-  NAME_MAX_LENGTH_MESSAGE,
-  NAME_MIN_LENGTH_MESSAGE,
-  PASSWORD_MIN_LENGTH_MESSAGE,
   PASSWORD_UPDATE_ERROR_MESSAGE,
   PASSWORD_UPDATE_SUCCESS_MESSAGE,
-  PASSWORDS_DO_NOT_MATCH_MESSAGE,
   REGISTRATION_SUCCESS_MESSAGE,
-  REQUIRE_PASSWORD_MESSAGE,
-  ROLE_REQUIRED_MESSAGE,
   SESSION_NOT_FOUND_MESSAGE,
-  SPECIALTY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-  PHONE_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-  ADDRESS_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-  CITY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
 } from "../helpers/messages-helpers";
-import { prisma } from "@/db/prisma";
+import { findUserByEmail, findPasswordHashById, updatePasswordHash, createUser, updateUser } from "@/features/users/repository";
+import { registerFormSchema, userPasswordFormSchema, userProfileFormSchema } from "@/features/users/validation";
 import bcrypt from "bcryptjs";
 import { getSession } from "../helpers/auth-helpers";
 import {
@@ -37,113 +26,10 @@ import { RegisterFormState } from "@/types/form-state/register-form-state";
 import { FormInfosState } from "@/types/form-state/information-form-state";
 import { FormUpdatePasswordState } from "@/types/form-state/password-update-form-state";
 
-const registerFormSchema = z
-  .object({
-    name: z.string().min(2, NAME_MIN_LENGTH_MESSAGE),
-    email: z.email(EMAIL_INVALID_MESSAGE).toLowerCase(),
-    password: z.string().min(8, PASSWORD_MIN_LENGTH_MESSAGE),
-    confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
-    role: z.enum(["CLIENT", "PRACTITIONER"], {
-      message: ROLE_REQUIRED_MESSAGE,
-    }),
-    phone: z
-      .string()
-      .optional()
-      .transform((val) => val?.replace(/[\s.-]/g, ""))
-      .pipe(
-        z
-          .string()
-          .regex(
-            /^(?:(?:\+|00)33|0)[1-9](?:[0-9]{2}){4}$/,
-            "Le numéro de téléphone doit être un numéro français valide"
-          )
-          .optional()
-      ),
-    address: z.string().optional(),
-    city: z.string().optional(),
-    specialty: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
-    path: ["confirmPassword"],
-  })
-  .refine(
-    (data) => {
-      if (data.role === "PRACTITIONER") {
-        return data.specialty && data.specialty.length > 0;
-      }
-      return true;
-    },
-    {
-      message: SPECIALTY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-      path: ["specialty"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.role === "PRACTITIONER") {
-        return data.phone && data.phone.length > 0;
-      }
-      return true;
-    },
-    {
-      message: PHONE_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-      path: ["phone"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.role === "PRACTITIONER") {
-        return data.address && data.address.length > 0;
-      }
-      return true;
-    },
-    {
-      message: ADDRESS_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-      path: ["address"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.role === "PRACTITIONER") {
-        return data.city && data.city.length > 0;
-      }
-      return true;
-    },
-    {
-      message: CITY_REQUIRED_FOR_PRACTITIONER_MESSAGE,
-      path: ["city"],
-    }
-  );
-const userProfileFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, NAME_MIN_LENGTH_MESSAGE)
-    .max(30, NAME_MAX_LENGTH_MESSAGE),
-  email: z
-    .email(EMAIL_INVALID_MESSAGE)
-    .max(30, EMAIL_MAX_LENGTH_MESSAGE)
-    .toLowerCase(),
-});
-
-const userPasswordFormSchema = z
-  .object({
-    currentPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
-    newPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
-    confirmPassword: z.string().min(6, REQUIRE_PASSWORD_MESSAGE),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: PASSWORDS_DO_NOT_MATCH_MESSAGE,
-    path: ["confirmPassword"],
-  });
 
 export async function isEmailExist(email: string) {
   try {
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        email: email,
-      },
-    });
+    const existingUser = await findUserByEmail(email)
     return existingUser ? true : false;
   } catch (error) {
     console.error("Error checking email existence:", error);
@@ -153,10 +39,7 @@ export async function isEmailExist(email: string) {
 
 async function isPasswordValid(userId: string, password: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { password: true },
-    });
+    const user = await findPasswordHashById(userId)
 
     if (!user) {
       return false;
@@ -221,25 +104,17 @@ export async function registerUser(
       };
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: {
+    await createUser(
+      {
         name,
         email,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
         role,
       },
-    });
-    if (role === "PRACTITIONER" && specialty) {
-      await prisma.practitioner.create({
-        data: {
-          userId: user.id,
-          specialty,
-          phone,
-          address,
-          city,
-        },
-      });
-    }
+      role === "PRACTITIONER" && specialty
+        ? { specialty, phone, address, city }
+        : undefined
+    );
     return {
       errors: {},
       message: REGISTRATION_SUCCESS_MESSAGE,
@@ -287,13 +162,11 @@ export async function updateUserProfile(
       return createEmailExistsErrorMessage(prevState.id);
     }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        name: validatedFields.data.name,
-        email: validatedFields.data.email,
-      },
-    });
+    await updateUser({
+      id: userId,
+      name: validatedFields.data.name,
+      email: validatedFields.data.email
+    })
 
     revalidatePath("/profile");
 
@@ -350,10 +223,11 @@ export async function updateUserPassword(
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: { password: hashedNewPassword },
-    });
+
+    await updatePasswordHash({
+      id: session.user.id,
+      passwordHash: hashedNewPassword
+    })
 
     return {
       errors: undefined,
